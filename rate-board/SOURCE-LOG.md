@@ -115,6 +115,7 @@ never "cheap trades". Carries into the supply-test pitch.
 |---|---|---|---|
 | 2026-11-05 | — | v0.1 research draft built (this board) | public research |
 | 2026-11-05 | bins / powerwashing / appliance | v0.2: Service add-ons section added to board; site triage lanes + both engines' keyword arrays updated (bin/garbage-can → handyman lane; appliance/dishwasher/washing machine/microwave/fridge/oven/stove/garburator → licensed lane); site lane lists get the three services | today's sweep (rows above) |
+| 2026-11-05 | — | **v0.3: board restructure on Sam's go — wage cross-check section + all Vancouver/LM columns + the city fixed-price-card section REMOVED from the public board; board = Coast rates only. Zero band-number changes. The wage-anchor method and all city reference pricing remain in THIS log as internal sourcing. Reason on record: wages (take-home) read as billing rates — never show wage tables next to rates again on a public page** | Sam's chat go, Nov 5 |
 | *(supply test rows)* | | | 5 trade conversations → rate cards |
 
 ## Public-facing rules (locked Nov 4, unchanged)
@@ -124,3 +125,4 @@ never "cheap trades". Carries into the supply-test pitch.
 - Minimums/call-outs included (that's where sticker shock lives).
 - v0 = research only; v1.0 = after the 5 supply-test conversations correct it.
 - Board stays OFF the public site until Sam's go + corrections (draft prop for now).
+  (Overtaken Nov 5: Sam's go given — the board is live on the Pages draft; v0.3 = Coast-only restructure.)

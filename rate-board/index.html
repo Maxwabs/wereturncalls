@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>We Return Calls — Coast Rate Board (draft v0)</title>
+<title>We Return Calls — Coast Rate Board (v0.3 · Coast rates)</title>
 <!--
   ══════════════════════════════════════════════════════════════════════
-  WE RETURN CALLS — RATE BOARD · DRAFT v0.1 (research, 2026-11-05)
-  · INTERNAL DRAFT + supply-test prop. NOT public. Not linked from site yet.
-  · Every number cites SOURCE-LOG.md (same folder). Nothing invented.
-  · Tags:  OBSERVED = live local listing · PUBLISHED = city price card/guide
-           ANCHORED = Job Bank wage × 2.0–3.5 (method in log) · COLLECTING = supply test
+  WE RETURN CALLS — RATE BOARD · v0.3 (Coast-only, 2026-11-05)
+  · v0.1 research build · v0.2 + service add-ons · v0.3 = wages + city columns
+    REMOVED on Sam's go — the board shows Coast rates only; the wage-anchor
+    method + all city reference pricing live in SOURCE-LOG.md (same folder).
+  · Every number cites SOURCE-LOG.md. Nothing invented.
+  · Tags:  OBSERVED = live local listing · PUBLISHED = price card/guide
+           ANCHORED = wage-derived band (method in log) · COLLECTING = supply test
   · Update path: 5 trade conversations → rate cards → delta log → v1.0 refresh
   · GUARDRAIL (locked): trade-generic; never a named business next to a number;
     always "typical band, not a quote — the desk's estimate is the quote".
@@ -107,8 +109,8 @@
 
 <div class="callbar">
   <div class="wrap">
-    <a class="wordmark" href="../site/index-v2.html">WE RETURN <em>CALLS</em> — COAST TRADES DESK</a>
-    <span class="chip">DRAFT v0 · INTERNAL + SUPPLY-TEST PROP — NOT PUBLIC</span>
+    <a class="wordmark" href="../">WE RETURN <em>CALLS</em> — COAST TRADES DESK</a>
+    <span class="chip">DRAFT v0.3 · COAST RATES — HARDENS AT THE SUPPLY TEST</span>
   </div>
 </div>
 
@@ -116,18 +118,18 @@
   <div class="wrap">
     <span class="eyebrow">The rate board · research draft</span>
     <h1>WHAT COAST TRADES <span class="u">ACTUALLY CHARGE</span></h1>
-    <p class="lede">Sunshine Coast hourly bands, cross-referenced against Vancouver.
-    v0 is built from published market research and one live Coast listing — every number
-    tagged by how it was sourced. As trades hand over rate cards, each band hardens from
-    research into real, and this board carries a version number every time it moves.</p>
+    <p class="lede">Sunshine Coast hourly bands — one board, Coast rates only. Built from
+    published market research and one live Coast listing; every number tagged by how it
+    was sourced. As trades hand over rate cards, each band hardens from research into
+    real, and this board carries a version number every time it moves.</p>
     <div class="notice">
       <b>Typical Coast band — not a quote.</b> The desk's estimate is the quote. Bands are
-      trade-generic: no named business ever appears next to a number. Numbers land here
-      corrected by five trade conversations before this page ever goes public.
+      trade-generic: no named business ever appears next to a number. Bands harden to real
+      at five trade conversations, then stand as the desk's board on wereturncalls.ca.
       <div class="tags">
-        <span class="tag pub">PUBLISHED — city/firm price card</span>
+        <span class="tag pub">PUBLISHED — price card/guide</span>
         <span class="tag obs">OBSERVED — live Coast listing</span>
-        <span class="tag anch">ANCHORED — Job Bank wage × 2.0–3.5</span>
+        <span class="tag anch">ANCHORED — wage-derived band</span>
         <span class="tag col">COLLECTING — supply test</span>
       </div>
     </div>
@@ -138,78 +140,63 @@
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">Main board</span>
-      <h2>Coast × Vancouver, side by side</h2>
+      <h2>The rates. Coast only.</h2>
       <p>Customer-facing hourly bands for solo-to-small-shop operators — the lane the desk
-      serves. City figures include big-company rates (higher); Coast anchored on worker wages
-      where no local card is published yet.</p>
+      serves. Typical-Coast ranges, not quotes; where the desk is still collecting, the real
+      number lands from trade rate cards at the supply test.</p>
     </div>
     <table class="board">
       <thead>
         <tr>
-          <th style="width:16%">Trade</th>
-          <th style="width:22%">Sunshine Coast $/hr</th>
-          <th style="width:20%">Vancouver / LM $/hr</th>
-          <th style="width:11%">Coast vs city</th>
-          <th style="width:14%">Call-out / minimum</th>
-          <th style="width:17%">Basis</th>
+          <th style="width:18%">Trade</th>
+          <th style="width:32%">Sunshine Coast $/hr</th>
+          <th style="width:18%">Call-out / minimum</th>
+          <th style="width:32%">Basis</th>
         </tr>
       </thead>
       <tbody>
         <tr class="coast">
           <td class="trade">Handyman</td>
-          <td><span class="coast-b">$60–90</span><span class="basis">live coastwide ad bills <b>$65/hr</b></span></td>
-          <td><span class="van-b">$60–145</span><span class="basis">solo $40–55 … premium $145 + $290 2-h min</span></td>
-          <td class="gap">≈27% under city mid</td>
-          <td class="callout">Coast: collecting<br>Van: $100–150 norm</td>
-          <td><span class="tag obs">OBSERVED</span> <span class="tag pub">PUBLISHED</span><span class="basis">Craigslist Coastwide ad · urbantasker BC $60–90 · handld (rural −20–30%)</span></td>
+          <td><span class="coast-b">$60–90</span><span class="basis">live coastwide ad bills <b>$65/hr</b> · BC self-emp guide $60–90 · small/rural −20–30%</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag obs">OBSERVED</span> <span class="tag pub">PUBLISHED</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Plumber</td>
-          <td><span class="coast-b">$70–125</span><span class="basis">anchored on Coast-region wages (med $35.20)</span></td>
-          <td><span class="van-b">$110–190</span><span class="basis">BC std $90–150; Van/LM $110–190</span></td>
-          <td class="gap">≈35% under city mid</td>
-          <td class="callout">Coast: collecting<br>Van: $68 credited · $79 + $200 min</td>
-          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (Van)</span><span class="basis">Job Bank Islands&Coast wage med $35.20 × 2.0–3.5 · LM firm cards</span></td>
+          <td><span class="coast-b">$70–125</span><span class="basis">wage-derived band, Coast region</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (ref.)</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Electrician</td>
-          <td><span class="coast-b">$65–115</span><span class="basis">anchored on Coast-region wages (med $33.28)</span></td>
-          <td><span class="van-b">$100–150</span><span class="basis">first hour $250 common; svc-call norm $100–300</span></td>
-          <td class="gap">≈28% under city mid</td>
-          <td class="callout">Coast: collecting<br>Van: $100–300 svc call</td>
-          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (Van)</span><span class="basis">Job Bank Islands&Coast med $33.28 × 2.0–3.5 · BC electrical guide</span></td>
+          <td><span class="coast-b">$65–115</span><span class="basis">wage-derived band, Coast region</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (ref.)</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Carpenter</td>
-          <td><span class="coast-b">$65–110</span><span class="basis">anchored on Coast-region wages (med $32.00)</span></td>
-          <td><span class="van-b">$55–120</span><span class="basis">platform floor "from $55"; high end thin</span></td>
-          <td class="gap">≈ city parity</td>
-          <td class="callout">collecting both</td>
-          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (floor)</span><span class="basis">Job Bank Islands&Coast med $32.00 × 2.0–3.5 · framing/built-ins quote by job</span></td>
+          <td><span class="coast-b">$65–110</span><span class="basis">wage-derived band, Coast region</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (floor)</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Gas fitter / HVAC</td>
-          <td><span class="coast-b">$75–130</span><span class="basis">anchored on Coast-region wages (med $37.18)</span></td>
-          <td><span class="van-b">collecting</span><span class="basis">no published city card in sweep; LM wages $41–70</span></td>
-          <td class="gap">—</td>
-          <td class="callout">collecting both</td>
-          <td><span class="tag anch">ANCHORED</span> <span class="tag col">COLLECTING (Van)</span><span class="basis">Job Bank Islands&Coast med $37.18 × 2.0–3.5 · regulated lane — supply test collects</span></td>
+          <td><span class="coast-b">$75–130</span><span class="basis">wage-derived band, Coast region · regulated lane</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag col">COLLECTING</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Painter</td>
-          <td><span class="coast-b">$50–85</span><span class="basis">vetted/insured small crews; uninsured solos run $25–45 below desk floor</span></td>
-          <td><span class="van-b">$55–85</span><span class="basis">LM insured-crew guide; freelance $25–50</span></td>
-          <td class="gap">≈ city parity</td>
-          <td class="callout">collecting both</td>
-          <td><span class="tag pub">PUBLISHED</span> <span class="tag anch">ADJ.</span><span class="basis">LM guide $55–85 · ProWorks BC tiers · barrier-free trade — wide solo dispersion</span></td>
+          <td><span class="coast-b">$50–85</span><span class="basis">vetted/insured small crews; uninsured solos run below desk floor</span></td>
+          <td class="callout">collecting — supply test</td>
+          <td><span class="tag pub">PUBLISHED</span> <span class="tag anch">ADJ.</span></td>
         </tr>
       </tbody>
     </table>
     <div class="board-foot">
-      <b>How to read the gap:</b> the Coast bills well under city company rates for the big-overhead
-      trades (plumbing, electrical, handyman) and matches the city on the low-overhead ones
-      (carpentry, painting). The gap is overhead and competition density — <b>not cheaper trades</b>.
-      Wages prove it below.
+      <b>Bands, not prices.</b> Typical-Coast ranges — the desk's estimate is the quote. Each
+      band's sourcing and every reference number lives in <a href="SOURCE-LOG.md">SOURCE-LOG.md</a>;
+      real trade rate cards land here at the supply test and the board hardens to v1.0.
     </div>
   </div>
 </section>
@@ -217,7 +204,7 @@
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow">Service add-ons · v0.2</span>
+      <span class="eyebrow">Service add-ons</span>
       <h2>Bins, power washing &amp; appliance fixes</h2>
       <p>Unit-priced services the desk also books and batches. Different units, same rules:
       trade-generic, not a quote, and tagged by how the number was sourced.</p>
@@ -225,30 +212,26 @@
     <table class="board">
       <thead>
         <tr>
-          <th style="width:17%">Service</th>
-          <th style="width:24%">Sunshine Coast pricing</th>
-          <th style="width:26%">Vancouver / LM pricing</th>
-          <th style="width:33%">Desk angle + basis</th>
+          <th style="width:22%">Service</th>
+          <th style="width:34%">Sunshine Coast pricing</th>
+          <th style="width:44%">Desk angle + basis</th>
         </tr>
       </thead>
       <tbody>
         <tr class="coast">
           <td class="trade">Garbage bin cleaning<br><span style="font-family:var(--font-b);font-size:13px">per can, per visit</span></td>
           <td><span class="coast-b">collecting</span><span class="basis">local operators welcome: one truck, one street, collection-day run</span></td>
-          <td><span class="van-b">$20–50 per can</span> one-time<br><span class="basis">plans $7.99–14.99/can per clean · volume drops to ~$15–25</span></td>
-          <td><span class="tag obs">SHAPE</span> <span class="tag col">COLLECTING (Coast)</span><span class="basis">A coast street-run (8–14 cans, one collection-day morning) beats the city one-time price outright. Wastewater-capture rig required — no storm-drain rinsing. Published city card: Metro Van operators (one-time $24.99–50; plans from $14.99/mo)</span></td>
+          <td><span class="tag obs">SHAPE</span> <span class="tag col">COLLECTING</span><span class="basis">A coast street-run (8–14 cans, one collection-day morning) beats the published one-time price outright. Wastewater-capture rig required — no storm-drain rinsing.</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Power washing<br><span style="font-family:var(--font-b);font-size:13px">per m² + flat jobs</span></td>
-          <td><span class="coast-b">$5/m² fixed</span><br><span class="basis">min job $85 · typical $200 — published, Coast-area card</span></td>
-          <td><span class="van-b">$5/m²</span> · driveway $150–250<br><span class="basis">full home exterior $300–600 · platform from $45/hr</span></td>
-          <td><span class="tag pub">PUBLISHED</span> <span class="tag col">COLLECTING (locals)</span><span class="basis">City parity here — moss + wet winters keep demand strong on the Coast. Handyman-lane: ground-level surfaces, customer's water access; never roofs/ladder-height. Batched with bin runs = one truck, two services.</span></td>
+          <td><span class="coast-b">$5/m² fixed</span><br><span class="basis">min job $85 · typical job ~$200 — published, Coast-area card</span></td>
+          <td><span class="tag pub">PUBLISHED</span> <span class="tag col">COLLECTING (locals)</span><span class="basis">Moss + wet winters keep demand strong on the Coast. Handyman-lane: ground-level surfaces, customer's water access; never roofs/ladder-height. Batched with bin runs = one truck, two services.</span></td>
         </tr>
         <tr class="coast">
           <td class="trade">Appliance repairs<br><span style="font-family:var(--font-b);font-size:13px">service call + rates</span></td>
           <td><span class="coast-b">collecting</span><span class="basis">rural techs price the visit — expect travel add-on</span></td>
-          <td><span class="van-b">$100–180</span> service call<br><span class="basis">labour $100–175/hr · washer job $150–500 · dishwasher $130–380</span></td>
-          <td><span class="tag pub">PUBLISHED (Van)</span> <span class="tag col">COLLECTING (Coast)</span><span class="basis">LICENSED lane: appliance techs only — never DIY inside an appliance (microwave capacitors, gas dryers = gas fitter). Desk multi-applies a run: fridge + washer + dishwasher in one tech visit instead of three service calls.</span></td>
+          <td><span class="tag pub">PUBLISHED (ref.)</span> <span class="tag col">COLLECTING (Coast)</span><span class="basis">LICENSED lane: appliance techs only — never DIY inside an appliance (microwave capacitors, gas dryers = gas fitter). Desk multi-applies a run: fridge + washer + dishwasher in one tech visit instead of three service calls.</span></td>
         </tr>
       </tbody>
     </table>
@@ -260,82 +243,7 @@
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">The wage cross-check</span>
-      <h2>The Coast doesn't pay trades less — it's just hard to get one</h2>
-      <p>Worker wages (not billing), Statistics Canada Job Bank, updated Nov 19, 2025.
-      "Islands & Coast" is the region containing the Sunshine Coast. If the trades' take-home
-      is city-level, the service-price gap above is our batching case — the supply-test pitch
-      writes itself: <i>same money, less dead calendar, jobs that actually fit your day.</i></p>
-    </div>
-    <table class="board">
-      <thead>
-        <tr>
-          <th style="width:22%">Trade</th>
-          <th style="width:26%">Islands & Coast — low / med / high</th>
-          <th style="width:26%">Lower Mainland–SW — low / med / high</th>
-          <th style="width:26%">BC — low / med / high</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="coast"><td class="trade">Plumber</td><td>$25.51 / <b>$35.20</b> / $44.76</td><td>$22.00 / <b>$30.00</b> / $48.00</td><td>$23.00 / $32.00 / $48.00</td></tr>
-        <tr class="coast"><td class="trade">Electrician</td><td>$21.60 / <b>$33.28</b> / $44.42</td><td>$21.82 / <b>$34.57</b> / $47.69</td><td>$20.00 / $34.00 / $47.49</td></tr>
-        <tr class="coast"><td class="trade">Carpenter</td><td>$23.08 / <b>$32.00</b> / $45.00</td><td>collecting</td><td>$23.00 / $32.00 / $43.71</td></tr>
-        <tr class="coast"><td class="trade">Gas fitter</td><td>$24.90 / <b>$37.18</b> / $49.15</td><td>$33.13 / <b>$39.84</b> / $54.59</td><td>$25.97 / $39.82 / $56.72</td></tr>
-        <tr class="coast"><td class="trade">Painter</td><td>$22.00 / <b>$27.00</b> / $32.40</td><td>collecting</td><td>$21.00 / $28.00 / $35.00</td></tr>
-      </tbody>
-    </table>
-    <div class="verdict">
-      <b>Plumber:</b> Coast-region median wage $35.20 vs Vancouver-region $30.00 — the Coast pays
-      its trades <b>more</b>, not less. Scarcity is real; price is not the lever. <b>The desk's lever
-      is filling dead calendar with batched runs and taking the Nope pile off their voicemail.</b>
-      <span class="sub">Source: Job Bank prevailing-wage tables (Vancouver Island and Coast Region vs
-      Lower Mainland–Southwest), updated 2025-11-19 · full citations in SOURCE-LOG.md.</span>
-    </div>
-  </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Small-job reality check</span>
-      <h2>What "too small to bother" costs in the city</h2>
-      <p>A published Vancouver fixed-price card (shown anonymously — no firm name rides next to a
-      number), 2026. $79 call-out, then a $200 minimum on any work, on top. Prices include labour
-      with a 2-year guarantee. <b>Coast equivalents are being collected in the supply test</b> —
-      batched-run pricing is where the desk should beat this card outright.</p>
-    </div>
-    <div class="duo">
-      <div class="panel">
-        <h3>Vancouver card — common small jobs</h3>
-        <table>
-          <tr><td>Bathroom faucet cartridge, repair/replace</td><td class="num">$126</td></tr>
-          <tr><td>Kitchen faucet cartridge, repair/replace</td><td class="num">$251</td></tr>
-          <tr><td>Faucet swap (customer-supplied), bathroom</td><td class="num">$213</td></tr>
-          <tr><td>Faucet swap (customer-supplied), kitchen</td><td class="num">$395</td></tr>
-          <tr><td>Reset toilet wax seal</td><td class="num">$323</td></tr>
-          <tr><td>Replace shutoff valve</td><td class="num">$219</td></tr>
-          <tr><td>Garburator, customer-supplied</td><td class="num">$313</td></tr>
-          <tr><td>Install customer-supplied toilet</td><td class="num">$487</td></tr>
-          <tr><td>Install customer-supplied dishwasher</td><td class="num">$509</td></tr>
-          <tr><td>Install customer-supplied water heater</td><td class="num">$895</td></tr>
-          <tr class="total"><td>Plus call-out fee</td><td class="num">$79 + $200 min</td></tr>
-        </table>
-      </div>
-      <div class="panel">
-        <h3>What the desk does with this</h3>
-        <table>
-          <tr><td>Batch 4–6 of these into one neighbourhood run → one trip, no $79+padding minimums, no city-van travel</td><td class="num">coast pricing wins</td></tr>
-          <tr><td>Customer-supplied fixtures on most swaps (desk copy already says "text photos — photos price jobs")</td><td class="num">saves 20–40%</td></tr>
-          <tr><td>Assessment visit at $0-with-booking when confidence is needs-eyes — never quote a shaky band</td><td class="num">trust move</td></tr>
-          <tr><td>Same card data becomes the desk's comparison rows the moment Coast trades confirm rates</td><td class="num">v1.0 goal</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section>
   <div class="wrap">
@@ -350,16 +258,16 @@
       <div class="step"><h3>v1.0 — corrected, then public</h3><p>Research tags retire; bands stand on trade cards. Public copy stays trade-generic, "not a quote," no named businesses. Goes live on wereturncalls.ca on Sam's go.</p></div>
     </div>
     <p style="margin-top:26px">
-      <span class="logbar"><b>v0.2</b> 2026-11-05 — research build + service add-ons (bins / power washing / appliance) · next tag: supply-test corrections</span>
+      <span class="logbar"><b>v0.3</b> 2026-11-05 — Coast-only restructure: wages + city columns removed (Sam's go) · v0.1 research · v0.2 service add-ons · next tag: supply-test corrections</span>
     </p>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <p><b>Internal draft.</b> Not yet linked from the public site; not deployable. Numbers are
-    research-grade and tagged; the board ships public only after the five supply-test
-    conversations, on the owner's go. Source log with every citation:
+    <p><b>Draft board, live on the GitHub Pages site.</b> Numbers are research-grade and
+    tagged; bands harden to real at the five supply-test conversations, then stand as the
+    desk's board on wereturncalls.ca on the owner's go. Source log with every citation:
     <a href="SOURCE-LOG.md">SOURCE-LOG.md</a> (same folder). © 2026 We Return Calls · wereturncalls.ca</p>
   </div>
 </footer>
