@@ -6,12 +6,13 @@ neighbourhood runs, licensed work to licensed contractors. Trades hand us
 their Nope pile; the desk returns calls, triages, and books batches.
 
 ## In this repo
-- `/` — the site (call/chat intake, DIY lane w/ stop-lines, price bands, trades pitch)
-- `/rate-board/` — Coast × Vancouver rate board draft + SOURCE-LOG.md (every number cited)
-- `/receptionist/` — voice-intake engine prototype (7 test personas, incl. outbound referrals)
+- `/` — the site, **v3 photo build** (`site/index-v3.html`, live at root): friendly re-skin with photos, same engine + guardrails
+- `/rate-board/` — Coast × Vancouver rate board draft + SOURCE-LOG.md (every number cited) — linked from site nav + footer
+- `/receptionist/` — voice-intake engine prototype (7 test personas, incl. outbound referrals) — linked from site nav + footer
+- `/site/index-v2.html` — v2 kept (brutalist print skin); `/site/index.html` — v1 kept
 
-## Status: PRE-DEPLOY DRAFT — not the live business site
-- Phone **(604) 555-0144 is a FAKE placeholder** — marked in-file, never ship as-is
+## Status: LIVE DRAFT on GitHub Pages — real number live, not the launched business yet
+- Phone **(604) 283-5336 is REAL** — desk line via Fongo (decided 2026-11-05; was the fake (604) 555-0144 placeholder)
 - hello@wereturncalls.ca pending mailbox setup
 - Chat form pending (Formspree/Telegram)
 

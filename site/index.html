@@ -8,11 +8,11 @@
 <!--
   ══════════════════════════════════════════════════════════════════
   WE RETURN CALLS — v1 site (static, single file)
-  SWAP-POINTS before launch:
-    1) PHONE   : search "SWAP-PHONE"  — placeholder (604) 555-0144 everywhere
-    2) EMAIL   : search "SWAP-EMAIL"  — hello@wereturncalls.ca (Porkbun fwd pending)
-    3) FORM    : search "SWAP-FORM"   — currently local ticket preview only;
-                 wire to Formspree/Telegram when the desk number exists
+  SWAP-STATUS 2026-11-05:
+    1) PHONE   : DONE — (604) 283-5336 live via Fongo (Fongo-vs-Twilio recorded;
+                 replaces the old fake placeholder everywhere (marked SWAP-PHONE))
+    2) EMAIL   : pending — hello@wereturncalls.ca (Porkbun fwd pending)
+    3) FORM    : pending — local ticket preview only; wire to Formspree/Telegram
   ══════════════════════════════════════════════════════════════════
 -->
 <style>
@@ -342,7 +342,7 @@
     <a class="wordmark" href="#top">WE <em>RETURN</em> CALLS</a>
     <span class="callbar-tag">Sunshine Coast trades desk</span>
     <!-- SWAP-PHONE -->
-    <a class="callbar-cta" href="tel:+16045550144">☎ (604) 555-0144</a>
+    <a class="callbar-cta" href="tel:+16042835336">☎ (604) 283-5336</a>
   </div>
 </div>
 
@@ -350,7 +350,7 @@
 
 <!-- ═══ HERO ═══ -->
 <header class="hero">
-  <span class="stamp">SECHELT · BC</span>
+  <span class="stamp">COASTWIDE · BC</span>
   <div class="wrap hero-grid">
     <div>
       <p class="eyebrow">Small jobs. Booked &amp; batched.</p>
@@ -362,7 +362,7 @@
       </p>
       <div class="hero-ctas">
         <!-- SWAP-PHONE -->
-        <a class="btn btn-hivis" href="tel:+16045550144">Call (604) 555-0144</a>
+        <a class="btn btn-hivis" href="tel:+16042835336">Call (604) 283-5336</a>
         <a class="btn btn-ghost" href="#tell-us">Tell us the job online →</a>
       </div>
       <p class="hours"><span class="dot"></span><span id="hourstext">Checking desk hours…</span></p>
@@ -538,7 +538,7 @@
     </div>
     <div style="margin-top:34px">
       <!-- SWAP-PHONE -->
-      <a class="btn btn-hivis" href="tel:+16045550144">Join the roster — call (604) 555-0144</a>
+      <a class="btn btn-hivis" href="tel:+16042835336">Join the roster — call (604) 283-5336</a>
     </div>
   </div>
 </section>
@@ -649,7 +649,7 @@
       </div>
       <div class="foot-meta">
         <!-- SWAP-PHONE / SWAP-EMAIL -->
-        <b>Desk:</b> <a href="tel:+16045550144">(604) 555-0144</a><br>
+        <b>Desk:</b> <a href="tel:+16042835336">(604) 283-5336</a><br>
         <b>Email:</b> <a href="mailto:hello@wereturncalls.ca">hello@wereturncalls.ca</a><br>
         <b>Web:</b> wereturncalls.ca
       </div>
@@ -723,7 +723,7 @@
       '</dl>' +
       '<p class="after">This is your copy. The desk version lands in our queue with triage ' +
       '(handyman vs. licensed) and a same-business-day callback. If anything changes, ' +
-      'call <a href="tel:+16045550144">(604) 555-0144</a>.</p>';
+      'call <a href="tel:+16042835336">(604) 283-5336</a>.</p>';
     ticket.scrollIntoView({behavior:'smooth', block:'nearest'});
     form.querySelector('button[type=submit]').textContent = '✓ Sent — check your copy below';
   }, false);

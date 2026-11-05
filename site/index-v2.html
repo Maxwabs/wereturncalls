@@ -12,8 +12,9 @@
     · adds the FREE DIY lane (handyman-safe scope only — never gas/
       inside-electrical/ladders/roofs; every DIY chat is logged)
     · three lanes now: DIY (free) / handyman runs / licensed pros
-  SWAP-POINTS before launch: SWAP-PHONE (604) 555-0144 is FAKE,
-  SWAP-EMAIL hello@wereturncalls.ca pending Porkbun forward.
+  PHONE SWAPPED 2026-11-05: (604) 283-5336 is REAL — live desk line via Fongo
+  (Fongo-vs-Twilio decision recorded; replaces the old fake placeholder marked SWAP-PHONE).
+  SWAP-EMAIL pending: hello@wereturncalls.ca → Porkbun forward.
   ══════════════════════════════════════════════════════════════════
 -->
 <style>
@@ -217,14 +218,19 @@
     <a class="wordmark" href="#top">WE <em>RETURN</em> CALLS</a>
     <span class="callbar-tag">Sunshine Coast trades desk</span>
     <!-- SWAP-PHONE -->
-    <a class="callbar-cta" href="tel:+16045550144">☎ (604) 555-0144</a>
+    <a class="callbar-cta" href="tel:+16042835336">☎ (604) 283-5336</a>
   </div>
+</div>
+
+<div style="display:flex;gap:10px;justify-content:center;padding:10px 16px;background:var(--paper-2);border-bottom:2px solid var(--ink)">
+  <a class="btn btn-ghost" href="/rate-board/" style="font-size:12px;padding:8px 14px">Rate board — Coast × Vancouver</a>
+  <a class="btn btn-ghost" href="/receptionist/" style="font-size:12px;padding:8px 14px">How the phone desk works</a>
 </div>
 
 <main id="top">
 
 <header class="hero">
-  <span class="stamp">SECHELT · BC</span>
+  <span class="stamp">COASTWIDE · BC</span>
   <div class="wrap hero-grid">
     <div>
       <p class="eyebrow">Small jobs. Booked &amp; batched.</p>
@@ -237,7 +243,7 @@
       </p>
       <div class="hero-ctas">
         <!-- SWAP-PHONE -->
-        <a class="btn btn-hivis" href="tel:+16045550144">Call (604) 555-0144</a>
+        <a class="btn btn-hivis" href="tel:+16042835336">Call (604) 283-5336</a>
         <a class="btn btn-ghost" href="#tell-us">Tell us live — chat →</a>
       </div>
       <p class="hours"><span class="dot"></span><span id="hourstext">Checking desk hours…</span></p>
@@ -403,7 +409,7 @@
     <div class="nope"><b>The Nope pile, handled:</b> hand us a number and that's the whole job — text it, forward the voicemail, email it, two words if you know them ("leaky tap") or zero if you don't. We call it cold, explain who referred them, and take it from there. Tell the customer one sentence on your way out — <i>"I can't take it, but the desk calls you today"</i> — and nobody's blindsided. <b>The boomerang:</b> your referred drip turns out to be a repipe? It comes back to you first. Weekly or twice-weekly roster check-ins, whatever cadence suits you — and white-label if you want the credit: <i>"Rick's office asked us to call you."</i></div>
     <div style="margin-top:26px">
       <!-- SWAP-PHONE -->
-      <a class="btn btn-hivis" href="tel:+16045550144">Join the roster — call (604) 555-0144</a>
+      <a class="btn btn-hivis" href="tel:+16042835336">Join the roster — call (604) 283-5336</a>
     </div>
   </div>
 </section>
@@ -472,7 +478,7 @@
       </div>
       <div class="foot-meta">
         <!-- SWAP-PHONE / SWAP-EMAIL -->
-        <b>Desk:</b> <a href="tel:+16045550144">(604) 555-0144</a><br>
+        <b>Desk:</b> <a href="tel:+16042835336">(604) 283-5336</a><br>
         <b>Email:</b> <a href="mailto:hello@wereturncalls.ca">hello@wereturncalls.ca</a><br>
         <b>Web:</b> wereturncalls.ca
       </div>
@@ -569,7 +575,7 @@ function chatRespond(raw){
   }
   if(HUMAN_KW.some(k=>l.includes(k)) && !LICENSED_KW.some(k=>l.includes(k)) && !HANDYMAN_KW.some(k=>l.includes(k)) && !Object.keys(DIY_KW).some(id=>DIY_KW[id].match.some(m=>l.includes(m)))){
     log('human-demand — chat offers the desk line');
-    return {lines:["This part is the desk's automated intake — the human comes next. Anything you tell me here lands on a real person's desk for a same-business-day callback. If you'd rather skip chat entirely: <b>(604) 555-0144</b>.","So — what's the job, in plain words?"],quick:[]};
+    return {lines:["This part is the desk's automated intake — the human comes next. Anything you tell me here lands on a real person's desk for a same-business-day callback. If you'd rather skip chat entirely: <b>(604) 283-5336</b>.","So — what's the job, in plain words?"],quick:[]};
   }
 
   const hood=HOODS.find(h=>l.includes(h));
@@ -630,7 +636,7 @@ function chatRespond(raw){
       CS.callback=d.length>=7?d.slice(0,10).replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3'):raw.trim();
       CS.stage="DONE";renderTicket();
       log('ticket queued for same-business-day callback','DESK');
-      return {lines:["You're in the queue, <b>"+esc(CS.name)+"</b>.","Ticket reads: <i>"+esc(CS.job||'—')+"</i> · "+esc(CS.hood||'—')+" · "+esc(CS.urg||'—')+" · lane: <b>"+esc(CS.lane||'desk triage')+"</b>. Callback today on "+esc(CS.callback)+".","Prefer to talk it through first? The desk line is <b>(604) 555-0144</b>. It's what we're named for — we return calls."],quick:[["All set","all set"]]};
+      return {lines:["You're in the queue, <b>"+esc(CS.name)+"</b>.","Ticket reads: <i>"+esc(CS.job||'—')+"</i> · "+esc(CS.hood||'—')+" · "+esc(CS.urg||'—')+" · lane: <b>"+esc(CS.lane||'desk triage')+"</b>. Callback today on "+esc(CS.callback)+".","Prefer to talk it through first? The desk line is <b>(604) 283-5336</b>. It's what we're named for — we return calls."],quick:[["All set","all set"]]};
     }
     case "DONE":{
       if(l.includes('one more thing')||l.includes('another')){CS.stage="OPEN";CS.job=null;CS.diy=null;CS.lane=null;renderTicket();return {lines:["Go ahead — what's the next one?"],quick:[]};}
