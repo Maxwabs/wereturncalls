@@ -6,7 +6,7 @@ neighbourhood runs, licensed work to licensed contractors. Trades hand us
 their Nope pile; the desk returns calls, triages, and books batches.
 
 ## In this repo
-- `/` — the site, **v3 photo build** (`site/index-v3.html`, live at root): friendly re-skin with photos, same engine + guardrails
+- `/` — the site, **v3 photo build** (root `index.html`): friendly re-skin with photos, same engine + guardrails; nav/footer links are project-relative (survive the custom-domain move); one canonical file, no /site/ duplicate
 - `/rate-board/` — Coast × Vancouver rate board draft + SOURCE-LOG.md (every number cited) — linked from site nav + footer
 - `/receptionist/` — voice-intake engine prototype (7 test personas, incl. outbound referrals) — linked from site nav + footer
 - `/site/index-v2.html` — v2 kept (brutalist print skin); `/site/index.html` — v1 kept
