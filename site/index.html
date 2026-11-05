@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Return Calls — Sunshine Coast Trades Desk</title>
+<meta name="description" content="Small jobs, booked and batched on the Sunshine Coast. Every call returned the same business day. Handyman fixes and licensed trades — one number.">
+<!--
+  ══════════════════════════════════════════════════════════════════
+  WE RETURN CALLS — v1 site (static, single file)
+  SWAP-POINTS before launch:
+    1) PHONE   : search "SWAP-PHONE"  — placeholder (604) 555-0144 everywhere
+    2) EMAIL   : search "SWAP-EMAIL"  — hello@wereturncalls.ca (Porkbun fwd pending)
+    3) FORM    : search "SWAP-FORM"   — currently local ticket preview only;
+                 wire to Formspree/Telegram when the desk number exists
+  ══════════════════════════════════════════════════════════════════
+-->
+<style>
+  /* ── TOKENS ─────────────────────────────────────────────── */
+  :root{
+    --paper:      #F4EFE4;   /* warm cream */
+    --paper-2:    #EAE2D0;   /* deeper cream */
+    --ink:        #1C2420;   /* near-black green ink */
+    --ink-soft:   #3D463F;
+    --hivis:      #FF5A1F;   /* hi-vis workwear orange */
+    --hivis-deep: #D8430F;
+    --pine:       #1E4D3B;   /* coast forest */
+    --pine-bright:#2A6B51;
+    --sky:        #BFD8D2;   /* pale strait water */
+    --line:       3px solid var(--ink);
+    --sh:         7px 7px 0 var(--ink);           /* hard shadow */
+    --sh-sm:      4px 4px 0 var(--ink);
+    --font-d:     "Arial Black","Archivo Black",Arial,Helvetica,sans-serif;
+    --font-b:     -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --max:        1120px;
+    --rad:        2px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-b);
+    font-size:19px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--hivis);color:#fff}
+  a{color:var(--pine-bright)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  h1,h2,h3,.display{font-family:var(--font-d);line-height:1.05;letter-spacing:-.5px}
+  .eyebrow{
+    font-family:var(--font-d);font-size:13px;letter-spacing:2.5px;
+    text-transform:uppercase;color:var(--pine);
+  }
+
+  /* ── STICKY CALL BAR ────────────────────────────────────── */
+  .callbar{
+    position:sticky;top:0;z-index:50;
+    background:var(--ink);color:var(--paper);
+    border-bottom:3px solid var(--hivis);
+  }
+  .callbar .wrap{display:flex;align-items:center;justify-content:space-between;
+    min-height:68px;gap:16px}
+  .wordmark{font-family:var(--font-d);font-size:15px;letter-spacing:.5px;
+    color:var(--paper);text-decoration:none;white-space:nowrap}
+  .wordmark em{font-style:normal;color:var(--hivis)}
+  .callbar-cta{
+    font-family:var(--font-d);font-size:clamp(14px,2.4vw,19px);
+    color:var(--ink);background:var(--hivis);text-decoration:none;
+    padding:12px 22px;border:3px solid var(--hivis);
+    box-shadow:4px 4px 0 rgba(255,90,31,.35);
+    transition:transform .08s ease,background .08s ease;
+    white-space:nowrap;
+  }
+  .callbar-cta:hover{background:#FF6B35;transform:translate(-1px,-1px)}
+  .callbar-tag{font-size:13px;color:#B9C2BC;white-space:nowrap}
+  @media (max-width:640px){.callbar-tag{display:none}}
+
+  /* ── HERO ───────────────────────────────────────────────── */
+  .hero{padding:clamp(48px,8vw,96px) 0 clamp(40px,6vw,72px);position:relative;overflow:hidden}
+  .hero-grid{
+    display:grid;grid-template-columns:1.35fr .9fr;gap:clamp(28px,4vw,56px);
+    align-items:center;
+  }
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
+  .hero h1{
+    font-size:clamp(40px,6.2vw,76px);
+    text-transform:uppercase;
+    margin:14px 0 20px;
+  }
+  .hero h1 .u{
+    text-decoration:underline;text-decoration-color:var(--hivis);
+    text-decoration-thickness:8px;text-underline-offset:6px;
+  }
+  .hero-sub{font-size:clamp(19px,2.2vw,23px);color:var(--ink-soft);max-width:34ch}
+  .hero-sub strong{color:var(--ink)}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:16px;margin-top:34px}
+  .btn{
+    display:inline-block;font-family:var(--font-d);text-decoration:none;
+    font-size:clamp(16px,2vw,20px);padding:18px 28px;cursor:pointer;
+    border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);
+    transition:transform .08s ease,box-shadow .08s ease;background:#fff;color:var(--ink);
+    text-align:center;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn-hivis{background:var(--hivis);color:#fff;border-color:var(--ink)}
+  .btn-hivis:hover{background:var(--hivis-deep)}
+  .btn-ghost{background:transparent}
+  /* promise card */
+  .promise{
+    background:#fff;border:var(--line);box-shadow:var(--sh);border-radius:var(--rad);
+    padding:30px 28px;transform:rotate(.6deg);
+  }
+  .promise h3{font-size:15px;letter-spacing:1.5px;text-transform:uppercase;
+    background:var(--ink);color:var(--paper);display:inline-block;padding:6px 12px;
+    margin-bottom:18px}
+  .promise ul{list-style:none}
+  .promise li{
+    padding:12px 0;border-bottom:2px dashed var(--paper-2);
+    font-size:17.5px;display:flex;gap:12px;align-items:flex-start;
+  }
+  .promise li:last-child{border-bottom:none}
+  .promise .tick{
+    flex:none;width:26px;height:26px;background:var(--pine);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;border-radius:50%;font-size:15px;margin-top:1px;
+  }
+  .stamp{
+    position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:26px;
+    font-family:var(--font-d);font-size:12px;letter-spacing:1.5px;
+    color:var(--pine);border:3px solid var(--pine);border-radius:var(--rad);
+    padding:8px 14px;transform:rotate(3deg);opacity:.85;background:var(--paper);
+  }
+  @media (max-width:900px){.stamp{static:unset;position:static;display:inline-block;margin-bottom:0}}
+
+  /* ── MARQUEE / SERVICE STRIP ────────────────────────────── */
+  .strip{
+    background:var(--pine);color:var(--paper);border-top:var(--line);border-bottom:var(--line);
+    overflow:hidden;white-space:nowrap;
+  }
+  .strip-track{display:inline-block;padding:14px 0;animation:slide 38s linear infinite}
+  .strip span{
+    font-family:var(--font-d);font-size:14px;letter-spacing:2px;text-transform:uppercase;
+    margin:0 26px;
+  }
+  .strip b{color:var(--hivis)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){
+    .strip-track{animation:none}
+    .strip{white-space:normal}
+  }
+
+  /* ── SECTIONS ───────────────────────────────────────────── */
+  section{padding:clamp(56px,7vw,96px) 0;border-bottom:var(--line)}
+  .sec-head{margin-bottom:clamp(30px,5vw,52px);max-width:760px}
+  .sec-head h2{font-size:clamp(30px,4.4vw,52px);text-transform:uppercase;margin-top:12px}
+  .sec-head p{color:var(--ink-soft);margin-top:14px;font-size:19px}
+
+  /* problem */
+  .pain{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media (max-width:820px){.pain{grid-template-columns:1fr}}
+  .pain-card{
+    background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);
+    padding:26px 24px;
+  }
+  .pain-card .num{
+    font-family:var(--font-d);font-size:44px;color:var(--hivis);line-height:1;
+    display:block;margin-bottom:12px;
+  }
+  .pain-card h3{font-size:19px;margin-bottom:10px}
+  .pain-card p{font-size:16.5px;color:var(--ink-soft)}
+  .pain-verdict{
+    margin-top:28px;background:var(--ink);color:var(--paper);
+    padding:22px 26px;border-radius:var(--rad);
+    font-size:19px;max-width:820px;
+  }
+  .pain-verdict b{color:var(--hivis)}
+
+  /* how it works */
+  .steps{counter-reset:step;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--line);border-radius:var(--rad);overflow:hidden;box-shadow:var(--sh);background:var(--ink)}
+  @media (max-width:820px){.steps{grid-template-columns:1fr}}
+  .step{background:#fff;padding:32px 28px 36px}
+  .step + .step{border-left:var(--line)}
+  @media (max-width:820px){.step + .step{border-left:none;border-top:var(--line)}}
+  .step::before{
+    counter-increment:step;content:counter(step);
+    display:flex;align-items:center;justify-content:center;
+    width:52px;height:52px;background:var(--hivis);color:#fff;
+    font-family:var(--font-d);font-size:24px;border-radius:50%;
+    margin-bottom:18px;
+  }
+  .step h3{font-size:20px;margin-bottom:10px}
+  .step p{font-size:16.5px;color:var(--ink-soft)}
+
+  /* lanes */
+  .lanes{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media (max-width:820px){.lanes{grid-template-columns:1fr}}
+  .lane{border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;background:#fff}
+  .lane header{
+    padding:18px 26px;font-family:var(--font-d);font-size:20px;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .lane-handyman header{background:var(--pine);color:#fff}
+  .lane-licensed header{background:var(--ink);color:#fff}
+  .lane header .chip{
+    font-size:11px;letter-spacing:1.5px;background:rgba(255,255,255,.16);
+    padding:5px 10px;border-radius:2px;white-space:nowrap;
+  }
+  .lane ul{list-style:none;padding:10px 0}
+  .lane li{padding:10px 26px;font-size:17px;border-bottom:2px dashed var(--paper-2);
+    display:flex;gap:10px;align-items:baseline}
+  .lane li::before{content:"—";color:var(--hivis);font-weight:900}
+  .lane li:last-child{border-bottom:none}
+  .lane-note{
+    margin-top:20px;font-size:16.5px;color:var(--ink-soft);max-width:70ch;
+  }
+  .lane-note b{color:var(--ink)}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+  @media (max-width:820px){.price-grid{grid-template-columns:1fr}}
+  .price{
+    background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);
+    padding:28px 26px;display:flex;flex-direction:column;
+  }
+  .price .tag{
+    font-family:var(--font-d);font-size:13px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--pine);
+  }
+  .price .amt{
+    font-family:var(--font-d);font-size:54px;line-height:1;margin:10px 0 12px;
+  }
+  .price.free .amt{color:var(--pine-bright)}
+  .price p{font-size:16.5px;color:var(--ink-soft);flex:1}
+  .price .foot{
+    margin-top:16px;padding-top:14px;border-top:2px dashed var(--paper-2);
+    font-size:14.5px;color:var(--ink-soft);
+  }
+  .band-note{
+    margin-top:26px;background:#fff;border:var(--line);border-radius:var(--rad);
+    box-shadow:var(--sh-sm);padding:22px 26px;font-size:17px;max-width:860px;
+  }
+  .band-note .band{
+    font-family:var(--font-d);background:var(--paper-2);padding:1px 10px;
+    border:2px solid var(--ink);border-radius:3px;white-space:nowrap;
+  }
+
+  /* trades strip */
+  .trades{background:var(--ink);color:var(--paper);border-bottom:var(--line)}
+  .trades .sec-head h2,.trades .sec-head p{color:var(--paper)}
+  .trades .eyebrow{color:var(--hivis)}
+  .trades-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,4vw,56px);align-items:center}
+  @media (max-width:900px){.trades-grid{grid-template-columns:1fr}}
+  .trades ul{list-style:none;margin-top:8px}
+  .trades li{padding:11px 0;border-bottom:2px dashed rgba(244,239,228,.18);
+    display:flex;gap:12px;font-size:18px;align-items:flex-start}
+  .trades li:last-child{border-bottom:none}
+  .trades .tick{color:var(--hivis);font-weight:900;font-size:20px;line-height:1.3}
+  .trades-card{
+    background:var(--paper);color:var(--ink);border:var(--line);border-radius:var(--rad);
+    box-shadow:7px 7px 0 var(--hivis);padding:30px 28px;
+  }
+  .trades-card h3{font-size:19px;margin-bottom:12px;text-transform:uppercase}
+  .trades-card p{font-size:16.5px;color:var(--ink-soft);margin-bottom:18px}
+  .trades-card code{
+    display:block;background:var(--ink);color:var(--sky);
+    font-size:14px;padding:14px 16px;border-radius:3px;line-height:1.7;
+  }
+
+  /* form */
+  .formwrap{background:var(--paper-2);border-bottom:var(--line)}
+  .formbox{
+    background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);
+    padding:clamp(26px,4vw,44px);max-width:860px;
+  }
+  .f-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:680px){.f-row{grid-template-columns:1fr}}
+  .f-field{margin-bottom:20px;display:flex;flex-direction:column;gap:8px}
+  .f-field label{font-family:var(--font-d);font-size:14px;letter-spacing:1px;text-transform:uppercase}
+  .f-field .hint{font-size:14.5px;color:var(--ink-soft);font-weight:400;text-transform:none;letter-spacing:0;font-family:var(--font-b)}
+  .f-field input,.f-field select,.f-field textarea{
+    font:inherit;font-size:18px;padding:14px 16px;border:var(--line);
+    border-radius:var(--rad);background:var(--paper);color:var(--ink);
+  }
+  .f-field input:focus,.f-field select:focus,.f-field textarea:focus{
+    outline:4px solid var(--hivis);outline-offset:1px;
+  }
+  .f-field textarea{min-height:120px;resize:vertical}
+  .f-check{display:flex;gap:12px;align-items:flex-start;margin-bottom:22px;font-size:16.5px}
+  .f-check input{width:24px;height:24px;margin-top:2px;accent-color:var(--pine)}
+  .ticket{
+    display:none;margin-top:26px;border:3px dashed var(--pine);
+    background:#F7FBF5;border-radius:var(--rad);padding:24px;
+  }
+  .ticket.show{display:block}
+  .ticket h4{font-family:var(--font-d);text-transform:uppercase;font-size:16px;letter-spacing:1px;color:var(--pine)}
+  .ticket dl{display:grid;grid-template-columns:150px 1fr;gap:6px 16px;margin-top:14px;font-size:16px}
+  .ticket dt{font-weight:700;color:var(--ink-soft)}
+  .ticket .after{margin-top:16px;font-size:15.5px;color:var(--ink-soft)}
+
+  /* faq */
+  .faq details{
+    background:#fff;border:var(--line);border-radius:var(--rad);margin-bottom:14px;
+    box-shadow:var(--sh-sm);
+  }
+  .faq summary{
+    cursor:pointer;list-style:none;padding:20px 24px;
+    font-family:var(--font-d);font-size:18px;display:flex;justify-content:space-between;
+    align-items:center;gap:16px;
+  }
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-size:26px;color:var(--hivis);flex:none}
+  .faq details[open] summary::after{content:"–"}
+  .faq details[open] summary{border-bottom:2px dashed var(--paper-2)}
+  .faq .a{padding:18px 24px 24px;color:var(--ink-soft);font-size:17px;max-width:70ch}
+
+  /* footer */
+  footer{padding:48px 0 64px}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-start}
+  .foot-brand{font-family:var(--font-d);font-size:22px;text-transform:uppercase}
+  .foot-brand em{font-style:normal;color:var(--hivis)}
+  .foot-meta{font-size:15px;color:var(--ink-soft);line-height:2}
+  .foot-meta a{color:var(--ink)}
+  .tiny{font-size:13.5px;color:var(--ink-soft);margin-top:36px;max-width:70ch}
+
+  /* live hours pill on hero */
+  .hours{
+    display:inline-flex;align-items:center;gap:10px;margin-top:26px;
+    font-size:15.5px;font-weight:700;
+  }
+  .hours .dot{width:12px;height:12px;border-radius:50%;background:var(--pine-bright)}
+  .hours.closed .dot{background:var(--hivis)}
+</style>
+</head>
+<body>
+
+<!-- ═══ STICKY CALL BAR ═══ -->
+<div class="callbar">
+  <div class="wrap">
+    <a class="wordmark" href="#top">WE <em>RETURN</em> CALLS</a>
+    <span class="callbar-tag">Sunshine Coast trades desk</span>
+    <!-- SWAP-PHONE -->
+    <a class="callbar-cta" href="tel:+16045550144">☎ (604) 555-0144</a>
+  </div>
+</div>
+
+<main id="top">
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <span class="stamp">SECHELT · BC</span>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Small jobs. Booked &amp; batched.</p>
+      <h1>We <span class="u">return</span> calls.</h1>
+      <p class="hero-sub">
+        Can't get a Sunshine Coast tradesperson to answer or call back?
+        That's the whole business. One number, a <strong>same-business-day
+        callback</strong>, and your small job gets booked — for real this time.
+      </p>
+      <div class="hero-ctas">
+        <!-- SWAP-PHONE -->
+        <a class="btn btn-hivis" href="tel:+16045550144">Call (604) 555-0144</a>
+        <a class="btn btn-ghost" href="#tell-us">Tell us the job online →</a>
+      </div>
+      <p class="hours"><span class="dot"></span><span id="hourstext">Checking desk hours…</span></p>
+    </div>
+    <aside class="promise" aria-label="Our promise">
+      <h3>The promise</h3>
+      <ul>
+        <li><span class="tick">✓</span><span><b>Every call returned the same business day.</b> Not a slogan. The name.</span></li>
+        <li><span class="tick">✓</span><span><b>A real answer with a price band</b> — not "we'll get back to you."</span></li>
+        <li><span class="tick">✓</span><span><b>Batched neighbourhood runs</b> so small jobs are worth doing.</span></li>
+        <li><span class="tick">✓</span><span><b>Licensed work to licensed contractors.</b> Always, no exceptions.</span></li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<!-- ═══ SERVICE AREA MARQUEE ═══ -->
+<div class="strip" aria-hidden="true">
+  <div class="strip-track" id="striptrack">
+    <span>Langdale</span><b>◆</b><span>Gibsons</span><b>◆</b><span>Roberts Creek</span><b>◆</b>
+    <span>Davis Bay</span><b>◆</b><span>Sechelt</span><b>◆</b><span>Halfmoon Bay</span><b>◆</b>
+    <span>Pender Harbour</span><b>◆</b><span>Madeira Park</span><b>◆</b>
+    <span>Langdale</span><b>◆</b><span>Gibsons</span><b>◆</b><span>Roberts Creek</span><b>◆</b>
+    <span>Davis Bay</span><b>◆</b><span>Sechelt</span><b>◆</b><span>Halfmoon Bay</span><b>◆</b>
+    <span>Pender Harbour</span><b>◆</b><span>Madeira Park</span><b>◆</b>
+  </div>
+</div>
+
+<!-- ═══ THE PROBLEM ═══ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Sound familiar</p>
+      <h2>You called four of them.<br>None called back.</h2>
+      <p>It's not rudeness. It's arithmetic.</p>
+    </div>
+    <div class="pain">
+      <div class="pain-card">
+        <span class="num">01</span>
+        <h3>Small jobs lose trades money</h3>
+        <p>A 45-minute fix can mean an hour of quoting, an hour of driving, and an invoice for less than the fuel. So your message sits unheard.</p>
+      </div>
+      <div class="pain-card">
+        <span class="num">02</span>
+        <h3>The Coast is spread out</h3>
+        <p>Langdale to Pender Harbour is 80&nbsp;km of scattered addresses. One-off trips eat the day before the work even starts.</p>
+      </div>
+      <div class="pain-card">
+        <span class="num">03</span>
+        <h3>Wrong trade, wrong call</h3>
+        <p>A stuck window isn't a "builder" job and a dripping tap isn't a $140/hr plumber job. Guess wrong and nobody calls back.</p>
+      </div>
+    </div>
+    <p class="pain-verdict">The fix isn't nagging harder. It's <b>batching</b> — we stack small jobs into neighbourhood runs so doing them makes a tradesperson a proper day. And we answer the phone in the first place.</p>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How it works</p>
+      <h2>Three steps. One callback.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Tell us the job</h3>
+        <p>Call the desk or use the form. Say what's wrong, where you are, and text us photos if you can — photos price jobs.</p>
+      </div>
+      <div class="step">
+        <h3>We call back the same day</h3>
+        <p>A person from the desk returns your call the same business day — with straight answers: handyman job or licensed trade, and a price band.</p>
+      </div>
+      <div class="step">
+        <h3>Booked into a batched run</h3>
+        <p>Your job joins others on your street for a scheduled day. Trades get a full day of work; you get someone who actually shows up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THE LANES ═══ -->
+<section id="lanes">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The triage</p>
+      <h2>Right-sized work,<br>right-sized trade.</h2>
+      <p>Most "trades won't call back" jobs were never ticketed-trade jobs to begin with. We sort every call before anyone drives.</p>
+    </div>
+    <div class="lanes">
+      <div class="lane lane-handyman">
+        <header>Handyman lane <span class="chip">FASTEST</span></header>
+        <ul>
+          <li>Faucets, washers, drips &amp; fixture swaps</li>
+          <li>Doors, locks, hinges &amp; sticky windows</li>
+          <li>Drywall patches, paint touch-ups, caulking</li>
+          <li>Decks, fences, gates &amp; railings</li>
+          <li>Shelving, assembly &amp; the to-do list wall</li>
+          <li>Gutters, pressure washing, yard smalls</li>
+        </ul>
+      </div>
+      <div class="lane lane-licensed">
+        <header>Licensed trades <span class="chip">BY THE BOOK</span></header>
+        <ul>
+          <li>Anything gas — TSBC-licensed fitters only</li>
+          <li>Electrical — licensed contractors, permits included</li>
+          <li>Suites, duplexes &amp; strata — licensed by law</li>
+          <li>In-wall plumbing &amp; permitted plumbing work</li>
+          <li>Structural, roofing &amp; envelope work</li>
+          <li>Anything you'd want inspected because it should be</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lane-note"><b>Straight line, no exceptions:</b> regulated and permitted work goes to licensed, insured contractors with the right permits. If your job crosses the line, we tell you on the first callback — and we still book it for you with one of the Coast's licensed pros.</p>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What it costs you</p>
+      <h2>The call is free.<br>The estimate is free.</h2>
+    </div>
+    <div class="price-grid">
+      <div class="price free">
+        <span class="tag">Call the desk</span>
+        <span class="amt">$0</span>
+        <p>Every call answered or returned the same business day. Tell us what's wrong; we'll tell you honestly what kind of job it is.</p>
+        <div class="foot">Free. Always. It's the name.</div>
+      </div>
+      <div class="price free">
+        <span class="tag">Photo estimate</span>
+        <span class="amt">$0</span>
+        <p>Text us photos of the job. You get a realistic price band on your callback — a range, stated with its assumptions, not a fake-exact number.</p>
+        <div class="foot">Free with every callback.</div>
+      </div>
+      <div class="price">
+        <span class="tag">In-person assessment</span>
+        <span class="amt">$0*</span>
+        <p>If the job needs eyes on it, a visit fee applies — and it's <b>deducted from your invoice</b> when you book the work. Booked job = free visit.</p>
+        <div class="foot">*Assessment fee credited back on booking.</div>
+      </div>
+    </div>
+    <p class="band-note"><b>What a "band" sounds like:</b> <span class="band">faucet swap · likely $180–$260</span> — "if the shutoff valves are seized, worst case $360, and we'll show you before we turn a wrench." No surprises. That's the whole point.</p>
+  </div>
+</section>
+
+<!-- ═══ TRADES ═══ -->
+<section class="trades" id="trades">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">For Coast tradespeople</p>
+      <h2>Full days. Zero admin.<br>Your rates, our legwork.</h2>
+      <p>You don't hate small jobs — you hate what small jobs cost your office. We absorb that part.</p>
+    </div>
+    <div class="trades-grid">
+      <ul>
+        <li><span class="tick">→</span><span><b>Pre-scoped work:</b> every job arrives described, photographed, and triaged. No phone tag. Ever.</span></li>
+        <li><span class="tick">→</span><span><b>Batched routes:</b> 4–6 jobs in one neighbourhood, one day. Drive once, bill all day.</span></li>
+        <li><span class="tick">→</span><span><b>Your rate card, our arithmetic:</b> estimates computed from <i>your</i> posted rates. The desk prices nothing on its own.</span></li>
+        <li><span class="tick">→</span><span><b>The desk handles the client:</b> reminders, scheduling, and the "so what happens next" calls.</span></li>
+      </ul>
+      <div class="trades-card">
+        <h3>What lands in your pocket</h3>
+        <p>Not a lead. Not a maybe. A booking:</p>
+        <code>THU · DAVIS BAY LOOP — 5 JOBS<br>
+        09:00  faucet + 2 cartridges   · scoped ✓<br>
+        10:30  gate re-hang            · photos ✓<br>
+        13:00  licensed: panel check   · permit ✓<br>
+        <br>est. billable 6.2 hrs @ your card</code>
+      </div>
+    </div>
+    <div style="margin-top:34px">
+      <!-- SWAP-PHONE -->
+      <a class="btn btn-hivis" href="tel:+16045550144">Join the roster — call (604) 555-0144</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FORM ═══ -->
+<section class="formwrap" id="tell-us">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">No phone handy?</p>
+      <h2>Tell us the job.</h2>
+      <p>Two minutes. The desk calls you back the same business day — with an answer, not a runaround.</p>
+    </div>
+    <form class="formbox" id="jobform" novalidate>
+      <div class="f-row">
+        <div class="f-field">
+          <label for="fname">Your name</label>
+          <input id="fname" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="f-field">
+          <label for="fphone">Phone <span class="hint">— the number we return</span></label>
+          <input id="fphone" name="phone" type="tel" autocomplete="tel" required>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-field">
+          <label for="fhood">Neighbourhood</label>
+          <select id="fhood" name="hood" required>
+            <option value="">Choose…</option>
+            <option>Langdale</option><option>Gibsons</option><option>Roberts Creek</option>
+            <option>Davis Bay / Wilson Creek</option><option>Sechelt</option>
+            <option>Sandy Hook / Tuwanek</option><option>Halfmoon Bay</option>
+            <option>Pender Harbour / Madeira Park</option><option>Somewhere else on the Coast</option>
+          </select>
+        </div>
+        <div class="f-field">
+          <label for="furg">How urgent?</label>
+          <select id="furg" name="urgency" required>
+            <option value="">Choose…</option>
+            <option>Whenever's fair — small job</option>
+            <option>This week would be good</option>
+            <option>It's getting worse (leak, damage)</option>
+            <option>Safety worry — today if possible</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-field">
+        <label for="fjob">What's the job? <span class="hint">— plain words are perfect</span></label>
+        <textarea id="fjob" name="job" placeholder="e.g. Kitchen tap drips nonstop, gate won't latch, one window won't stay up…" required></textarea>
+      </div>
+      <div class="f-field">
+        <label for="fphotos">Photos <span class="hint">— optional, but photos price jobs</span></label>
+        <input id="fphotos" name="photos" type="file" accept="image/*" multiple>
+      </div>
+      <label class="f-check">
+        <input type="checkbox" id="flicensed">
+        <span>I understand licensed work (gas, most electrical, permitted plumbing) always goes to licensed contractors — and that's a good thing.</span>
+      </label>
+      <!-- SWAP-FORM: on launch, POST to Formspree/worker → Telegram desk digest -->
+      <button class="btn btn-hivis" type="submit" style="width:100%">Send it — and expect our call today</button>
+      <div class="ticket" id="ticket" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Straight answers</p>
+      <h2>Asked on the Coast.</h2>
+    </div>
+    <details>
+      <summary>Who actually shows up to do the work?</summary>
+      <div class="a">Depending on the job: a vetted Coast handyman from our roster, or a licensed contractor when the law or the work calls for it. The desk stays your single point of contact either way — you never chase anyone.</div>
+    </details>
+    <details>
+      <summary>What if it's a gas or electrical job?</summary>
+      <div class="a">Then it's a licensed-contractor job by law (Technical Safety BC), and we treat it that way from the first callback — booked with a licensed, insured pro, permits where required. If your home has a suite or is attached (duplex, townhouse, strata), most electrical needs a licensed contractor, full stop.</div>
+    </details>
+    <details>
+      <summary>How fast is "same business day," really?</summary>
+      <div class="a">Call or submit before mid-afternoon and you hear from us that day. Evenings and weekends, you hear back the next business day. Either way, you get a straight answer — never voicemail into the void.</div>
+    </details>
+    <details>
+      <summary>Why can't you give me one exact price on the phone?</summary>
+      <div class="a">Because honest pricing from photos is a <i>band</i> — a range with its assumptions stated. Anyone quoting an exact number for a job they haven't seen is guessing, and you'll pay for the guess. We give the range, then confirm on site before work starts.</div>
+    </details>
+    <details>
+      <summary>What does "batching" mean for me?</summary>
+      <div class="a">Your job joins a run with neighbours' jobs — a Tuesday in Sechelt, a Thursday in Gibsons. That efficiency is exactly why tradespeople take our small jobs, and it's how the desk keeps the callback and the estimate free.</div>
+    </details>
+    <details>
+      <summary>Where do you cover?</summary>
+      <div class="a">Langdale to Pender Harbour — Gibsons, Roberts Creek, Davis Bay, Wilson Creek, Sechelt, Sandy Hook, Halfmoon Bay, Madeira Park. Outside that, call anyway; if we can't do it fast, we'll say so on the callback instead of not calling at all.</div>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">WE <em>RETURN</em> CALLS</div>
+        <p class="foot-meta">The Sunshine Coast trades desk.<br>Run from Sechelt, BC.</p>
+      </div>
+      <div class="foot-meta">
+        <!-- SWAP-PHONE / SWAP-EMAIL -->
+        <b>Desk:</b> <a href="tel:+16045550144">(604) 555-0144</a><br>
+        <b>Email:</b> <a href="mailto:hello@wereturncalls.ca">hello@wereturncalls.ca</a><br>
+        <b>Web:</b> wereturncalls.ca
+      </div>
+      <div class="foot-meta">
+        <b>Hours:</b> Mon–Fri, desk hours<br>
+        Same-business-day callback, always.<br>
+        Langdale → Pender Harbour
+      </div>
+    </div>
+    <p class="tiny">We Return Calls is a booking and triage desk, not a general contractor. Regulated work (gas, electrical, permitted plumbing, and anything in suite/attached/strata properties where required by law) is performed only by appropriately licensed and insured contractors. Licensed work to licensed contractors — always. © 2026 We Return Calls · wereturncalls.ca</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── live desk hours pill ─────────────────────────────── */
+  var h = document.getElementById('hourstext');
+  var pill = document.querySelector('.hours');
+  function deskLine(){
+    var d = new Date(), day = d.getDay(), hr = d.getHours();
+    var bizDay = (day >= 1 && day <= 5);
+    if (bizDay && hr >= 9 && hr < 15){
+      return 'Desk is open — call now, callback today.';
+    } else if (bizDay && hr >= 15 && hr < 18){
+      return 'Late-day calls → callback first thing tomorrow.';
+    } else if (bizDay){
+      return 'After hours — callback tomorrow morning.';
+    }
+    return 'Weekend — leave the job; callback Monday.';
+  }
+  if (h){ h.textContent = deskLine();
+    var d0 = new Date(), day0 = d0.getDay(), hr0 = d0.getHours();
+    if (!(day0>=1 && day0<=5 && hr0>=9 && hr0<15)) pill.classList.add('closed');
+  }
+
+  /* ── form → local ticket preview (launch wire-up pending) ── */
+  var form = document.getElementById('jobform');
+  var ticket = document.getElementById('ticket');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var f = new FormData(form);
+    var name = (f.get('name')||'').trim();
+    var phone = (f.get('phone')||'').trim();
+    var hood = f.get('hood');
+    var urg = f.get('urgency');
+    var job = (f.get('job')||'').trim();
+    var missing = [];
+    if(!name) missing.push('name');
+    if(!phone) missing.push('phone');
+    if(!hood) missing.push('neighbourhood');
+    if(!urg) missing.push('urgency');
+    if(!job) missing.push('job description');
+    if(missing.length){
+      ticket.className = 'ticket show';
+      ticket.innerHTML = '<h4>Almost — missing:</h4><p style="margin-top:8px">' +
+        missing.join(', ') + '.</p>';
+      return;
+    }
+    var esc = function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+    ticket.className = 'ticket show';
+    ticket.innerHTML =
+      '<h4>✓ Job logged — expect our callback today</h4>' +
+      '<dl>' +
+      '<dt>Name</dt><dd>'+esc(name)+'</dd>' +
+      '<dt>Callback #</dt><dd>'+esc(phone)+'</dd>' +
+      '<dt>Neighbourhood</dt><dd>'+esc(hood)+'</dd>' +
+      '<dt>Urgency</dt><dd>'+esc(urg)+'</dd>' +
+      '<dt>Job</dt><dd>'+esc(job)+'</dd>' +
+      '</dl>' +
+      '<p class="after">This is your copy. The desk version lands in our queue with triage ' +
+      '(handyman vs. licensed) and a same-business-day callback. If anything changes, ' +
+      'call <a href="tel:+16045550144">(604) 555-0144</a>.</p>';
+    ticket.scrollIntoView({behavior:'smooth', block:'nearest'});
+    form.querySelector('button[type=submit]').textContent = '✓ Sent — check your copy below';
+  }, false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Return Calls — Sunshine Coast Trades Desk</title>
+<meta name="description" content="Small jobs, booked and batched on the Sunshine Coast. Free DIY guidance, same-day callback, handyman runs and licensed trades — one number.">
+<!--
+  ══════════════════════════════════════════════════════════════════
+  WE RETURN CALLS — v2 = v1 site + LIVE CHAT intake ("Tell us live")
+    · same engine brain as receptionist/index.html, chat-adapted
+    · adds the FREE DIY lane (handyman-safe scope only — never gas/
+      inside-electrical/ladders/roofs; every DIY chat is logged)
+    · three lanes now: DIY (free) / handyman runs / licensed pros
+  SWAP-POINTS before launch: SWAP-PHONE (604) 555-0144 is FAKE,
+  SWAP-EMAIL hello@wereturncalls.ca pending Porkbun forward.
+  ══════════════════════════════════════════════════════════════════
+-->
+<style>
+  :root{
+    --paper:#F4EFE4; --paper-2:#EAE2D0; --ink:#1C2420; --ink-soft:#3D463F;
+    --hivis:#FF5A1F; --hivis-deep:#D8430F; --pine:#1E4D3B; --pine-bright:#2A6B51;
+    --sky:#BFD8D2; --warn:#C0392B;
+    --line:3px solid var(--ink); --sh:7px 7px 0 var(--ink); --sh-sm:4px 4px 0 var(--ink);
+    --font-d:"Arial Black","Archivo Black",Arial,Helvetica,sans-serif;
+    --font-b:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,Consolas,monospace; --rad:2px; --max:1120px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-b);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--hivis);color:#fff}
+  a{color:var(--pine-bright)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  h1,h2,h3,.display{font-family:var(--font-d);line-height:1.05;letter-spacing:-.5px}
+  .eyebrow{font-family:var(--font-d);font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:var(--pine)}
+
+  .callbar{position:sticky;top:0;z-index:50;background:var(--ink);color:var(--paper);border-bottom:3px solid var(--hivis)}
+  .callbar .wrap{display:flex;align-items:center;justify-content:space-between;min-height:68px;gap:16px}
+  .wordmark{font-family:var(--font-d);font-size:15px;letter-spacing:.5px;color:var(--paper);text-decoration:none;white-space:nowrap}
+  .wordmark em{font-style:normal;color:var(--hivis)}
+  .callbar-cta{font-family:var(--font-d);font-size:clamp(14px,2.4vw,19px);color:var(--ink);background:var(--hivis);text-decoration:none;padding:12px 22px;border:3px solid var(--hivis);box-shadow:4px 4px 0 rgba(255,90,31,.35);white-space:nowrap}
+  .callbar-cta:hover{background:#FF6B35}
+  .callbar-tag{font-size:13px;color:#B9C2BC;white-space:nowrap}
+  @media (max-width:640px){.callbar-tag{display:none}}
+
+  .hero{padding:clamp(48px,8vw,96px) 0 clamp(40px,6vw,72px);position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:clamp(28px,4vw,56px);align-items:center}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
+  .hero h1{font-size:clamp(40px,6.2vw,76px);text-transform:uppercase;margin:14px 0 20px}
+  .hero h1 .u{text-decoration:underline;text-decoration-color:var(--hivis);text-decoration-thickness:8px;text-underline-offset:6px}
+  .hero-sub{font-size:clamp(19px,2.2vw,23px);color:var(--ink-soft);max-width:34ch}
+  .hero-sub strong{color:var(--ink)}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:16px;margin-top:34px}
+  .btn{display:inline-block;font-family:var(--font-d);text-decoration:none;font-size:clamp(16px,2vw,20px);padding:18px 28px;cursor:pointer;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);transition:transform .08s ease,box-shadow .08s ease;background:#fff;color:var(--ink);text-align:center}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn-hivis{background:var(--hivis);color:#fff;border-color:var(--ink)}
+  .btn-hivis:hover{background:var(--hivis-deep)}
+  .btn-ghost{background:transparent}
+  .promise{background:#fff;border:var(--line);box-shadow:var(--sh);border-radius:var(--rad);padding:30px 28px;transform:rotate(.6deg)}
+  .promise h3{font-size:15px;letter-spacing:1.5px;text-transform:uppercase;background:var(--ink);color:var(--paper);display:inline-block;padding:6px 12px;margin-bottom:18px}
+  .promise ul{list-style:none}
+  .promise li{padding:12px 0;border-bottom:2px dashed var(--paper-2);font-size:17.5px;display:flex;gap:12px;align-items:flex-start}
+  .promise li:last-child{border-bottom:none}
+  .promise .tick{flex:none;width:26px;height:26px;background:var(--pine);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;border-radius:50%;font-size:15px;margin-top:1px}
+  .stamp{position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:26px;font-family:var(--font-d);font-size:12px;letter-spacing:1.5px;color:var(--pine);border:3px solid var(--pine);border-radius:var(--rad);padding:8px 14px;transform:rotate(3deg);opacity:.85;background:var(--paper)}
+  @media (max-width:900px){.stamp{position:static;display:inline-block}}
+  .hours{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-size:15.5px;font-weight:700}
+  .hours .dot{width:12px;height:12px;border-radius:50%;background:var(--pine-bright)}
+  .hours.closed .dot{background:var(--hivis)}
+
+  .strip{background:var(--pine);color:var(--paper);border-top:var(--line);border-bottom:var(--line);overflow:hidden;white-space:nowrap}
+  .strip-track{display:inline-block;padding:14px 0;animation:slide 38s linear infinite}
+  .strip span{font-family:var(--font-d);font-size:14px;letter-spacing:2px;text-transform:uppercase;margin:0 26px}
+  .strip b{color:var(--hivis)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){.strip-track{animation:none}.strip{white-space:normal}}
+
+  section{padding:clamp(56px,7vw,96px) 0;border-bottom:var(--line)}
+  .sec-head{margin-bottom:clamp(30px,5vw,52px);max-width:780px}
+  .sec-head h2{font-size:clamp(30px,4.4vw,52px);text-transform:uppercase;margin-top:12px}
+  .sec-head p{color:var(--ink-soft);margin-top:14px;font-size:19px}
+
+  .pain{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media (max-width:820px){.pain{grid-template-columns:1fr}}
+  .pain-card{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);padding:26px 24px}
+  .pain-card .num{font-family:var(--font-d);font-size:44px;color:var(--hivis);line-height:1;display:block;margin-bottom:12px}
+  .pain-card h3{font-size:19px;margin-bottom:10px}
+  .pain-card p{font-size:16.5px;color:var(--ink-soft)}
+  .pain-verdict{margin-top:28px;background:var(--ink);color:var(--paper);padding:22px 26px;border-radius:var(--rad);font-size:19px;max-width:860px}
+  .pain-verdict b{color:var(--hivis)}
+
+  .steps{counter-reset:step;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:var(--line);border-radius:var(--rad);overflow:hidden;box-shadow:var(--sh);background:var(--ink)}
+  @media (max-width:820px){.steps{grid-template-columns:1fr}}
+  .step{background:#fff;padding:32px 28px 36px}
+  .step + .step{border-left:var(--line)}
+  @media (max-width:820px){.step + .step{border-left:none;border-top:var(--line)}}
+  .step::before{counter-increment:step;content:counter(step);display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--hivis);color:#fff;font-family:var(--font-d);font-size:24px;border-radius:50%;margin-bottom:18px}
+  .step h3{font-size:20px;margin-bottom:10px}
+  .step p{font-size:16.5px;color:var(--ink-soft)}
+
+  /* THREE lanes */
+  .lanes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+  @media (max-width:980px){.lanes{grid-template-columns:1fr}}
+  .lane{border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .lane header{padding:18px 24px;font-family:var(--font-d);font-size:17px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .lane-diy header{background:var(--pine-bright);color:#fff}
+  .lane-handyman header{background:var(--pine);color:#fff}
+  .lane-licensed header{background:var(--ink);color:#fff}
+  .lane header .chip{font-size:11px;letter-spacing:1.5px;background:rgba(255,255,255,.16);padding:5px 10px;border-radius:2px;white-space:nowrap}
+  .lane ul{list-style:none;padding:10px 0;flex:1}
+  .lane li{padding:9px 24px;font-size:16.5px;border-bottom:2px dashed var(--paper-2);display:flex;gap:10px;align-items:baseline}
+  .lane li::before{content:"—";color:var(--hivis);font-weight:900}
+  .lane li:last-child{border-bottom:none}
+  .lane .lane-foot{padding:14px 24px;font-size:14.5px;color:var(--ink-soft);border-top:2px dashed var(--paper-2)}
+  .lane-note{margin-top:20px;font-size:16.5px;color:var(--ink-soft);max-width:74ch}
+  .lane-note b{color:var(--ink)}
+
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+  @media (max-width:820px){.price-grid{grid-template-columns:1fr}}
+  .price{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);padding:28px 26px;display:flex;flex-direction:column}
+  .price .tag{font-family:var(--font-d);font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--pine)}
+  .price .amt{font-family:var(--font-d);font-size:54px;line-height:1;margin:10px 0 12px}
+  .price.free .amt{color:var(--pine-bright)}
+  .price p{font-size:16.5px;color:var(--ink-soft);flex:1}
+  .price .foot{margin-top:16px;padding-top:14px;border-top:2px dashed var(--paper-2);font-size:14.5px;color:var(--ink-soft)}
+  .band-note{margin-top:26px;background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);padding:22px 26px;font-size:17px;max-width:860px}
+  .band-note .band{font-family:var(--font-d);background:var(--paper-2);padding:1px 10px;border:2px solid var(--ink);border-radius:3px;white-space:nowrap}
+
+  .trades{background:var(--ink);color:var(--paper);border-bottom:var(--line)}
+  .trades .sec-head h2,.trades .sec-head p{color:var(--paper)}
+  .trades .eyebrow{color:var(--hivis)}
+  .trades-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,4vw,56px);align-items:center}
+  @media (max-width:900px){.trades-grid{grid-template-columns:1fr}}
+  .trades ul{list-style:none;margin-top:8px}
+  .trades li{padding:11px 0;border-bottom:2px dashed rgba(244,239,228,.18);display:flex;gap:12px;font-size:18px;align-items:flex-start}
+  .trades li:last-child{border-bottom:none}
+  .trades .tick{color:var(--hivis);font-weight:900;font-size:20px;line-height:1.3}
+  .trades-card{background:var(--paper);color:var(--ink);border:var(--line);border-radius:var(--rad);box-shadow:7px 7px 0 var(--hivis);padding:30px 28px}
+  .trades-card h3{font-size:19px;margin-bottom:12px;text-transform:uppercase}
+  .trades-card p{font-size:16.5px;color:var(--ink-soft);margin-bottom:18px}
+  .trades-card code{display:block;background:var(--ink);color:var(--sky);font-size:14px;padding:14px 16px;border-radius:3px;line-height:1.7}
+  .nope{margin-top:22px;background:#2A3832;border:3px dashed var(--hivis);border-radius:var(--rad);padding:20px 24px;font-size:18px;max-width:860px}
+  .nope b{color:var(--hivis)}
+
+  /* ═══ CHAT INTAKE ═══ */
+  .chatsec{background:var(--paper-2);border-bottom:var(--line)}
+  .chatwrap{display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:start}
+  @media (max-width:980px){.chatwrap{grid-template-columns:1fr}}
+  .chatcard{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+  .chatcard header{background:var(--pine);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .chatcard header .who{font-family:var(--font-d);font-size:16px}
+  .chatcard header .who small{display:block;font-family:var(--font-b);font-size:12px;font-weight:400;color:var(--sky)}
+  .chatlog{padding:16px 18px;min-height:380px;max-height:470px;overflow-y:auto;background:repeating-linear-gradient(0deg,#fff,#fff 34px,#FAF7EE 34px,#FAF7EE 68px)}
+  .line{margin-bottom:13px;display:flex;gap:10px;align-items:flex-end}
+  .line .who{flex:none;width:58px;font-size:10.5px;font-family:var(--font-d);text-transform:uppercase;letter-spacing:1px;padding-bottom:5px}
+  .line .bub{padding:11px 15px;border:2px solid var(--ink);border-radius:12px;max-width:82%;font-size:16px}
+  .line.bot .who{color:var(--pine)}
+  .line.bot .bub{background:#fff;border-color:var(--pine);border-bottom-left-radius:2px}
+  .line.human{flex-direction:row-reverse}
+  .line.human .who{color:var(--ink-soft);text-align:right}
+  .line.human .bub{background:var(--paper-2);border-bottom-right-radius:2px}
+  .line.sys{justify-content:center}
+  .line.sys .bub{background:transparent;border:2px dashed var(--hivis);color:var(--hivis-deep);font-size:13.5px;font-weight:700;border-radius:8px;max-width:94%}
+  .bub ol{margin:8px 0 0 20px}
+  .bub ol li{margin-bottom:6px;font-size:15.5px}
+  .bub .stop{margin-top:10px;padding:9px 12px;background:#FDEEE6;border-left:4px solid var(--hivis);font-size:14.5px;border-radius:2px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+  .quick .q{font:inherit;font-size:14px;font-weight:700;padding:9px 14px;border:2px solid var(--pine);border-radius:20px;background:#fff;color:var(--pine);cursor:pointer}
+  .quick .q:hover{background:var(--pine);color:#fff}
+  .typing i{display:inline-block;width:6px;height:6px;background:var(--pine);border-radius:50%;margin:0 2px;animation:bnc .9s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes bnc{0%,60%,100%{transform:none}30%{transform:translateY(-5px)}}
+  .chatin{display:flex;gap:10px;padding:14px 18px;border-top:var(--line);background:var(--paper)}
+  .chatin input{flex:1;font:inherit;font-size:17px;padding:13px 15px;border:var(--line);border-radius:var(--rad);background:#fff}
+  .chatin input:focus{outline:4px solid var(--hivis)}
+  .chatin button{font-family:var(--font-d);font-size:14px;padding:0 22px;border:var(--line);border-radius:var(--rad);background:var(--pine);color:#fff;cursor:pointer;box-shadow:var(--sh-sm)}
+  .chatfine{padding:10px 18px;font-size:13px;color:var(--ink-soft);border-top:2px dashed var(--paper-2)}
+  .ticket-side{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;position:sticky;top:90px}
+  .ticket-side header{background:var(--ink);color:var(--paper);padding:14px 18px;font-family:var(--font-d);font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  .lane-chip{font-size:11px;letter-spacing:1.5px;padding:6px 12px;border-radius:2px;background:var(--paper-2);color:var(--ink);text-transform:uppercase}
+  .lane-chip.diy{background:var(--pine-bright);color:#fff}
+  .lane-chip.handyman{background:var(--pine);color:#fff}
+  .lane-chip.licensed{background:var(--ink);color:#fff;border:2px solid var(--hivis)}
+  .lane-chip.emergency{background:var(--warn);color:#fff;animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.75}}
+  .t-fields{padding:12px 18px}
+  .t-row{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:7px 0;border-bottom:2px dashed var(--paper-2);font-size:14.5px}
+  .t-row dt{font-weight:800;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);padding-top:2px}
+  .t-row dd{min-height:20px}
+  .t-row dd:empty::after{content:"—";color:#B9C2BC}
+  .log{background:var(--ink);color:#9FE8C9;font-family:var(--mono);font-size:11.5px;padding:12px 14px;max-height:130px;overflow-y:auto;line-height:1.65}
+  .log .g{color:var(--hivis)}
+
+  .faq details{background:#fff;border:var(--line);border-radius:var(--rad);margin-bottom:14px;box-shadow:var(--sh-sm)}
+  .faq summary{cursor:pointer;list-style:none;padding:20px 24px;font-family:var(--font-d);font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-size:26px;color:var(--hivis);flex:none}
+  .faq details[open] summary::after{content:"–"}
+  .faq details[open] summary{border-bottom:2px dashed var(--paper-2)}
+  .faq .a{padding:18px 24px 24px;color:var(--ink-soft);font-size:17px;max-width:72ch}
+
+  footer{padding:48px 0 64px}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-start}
+  .foot-brand{font-family:var(--font-d);font-size:22px;text-transform:uppercase}
+  .foot-brand em{font-style:normal;color:var(--hivis)}
+  .foot-meta{font-size:15px;color:var(--ink-soft);line-height:2}
+  .foot-meta a{color:var(--ink)}
+  .tiny{font-size:13.5px;color:var(--ink-soft);margin-top:36px;max-width:76ch}
+</style>
+</head>
+<body>
+
+<div class="callbar">
+  <div class="wrap">
+    <a class="wordmark" href="#top">WE <em>RETURN</em> CALLS</a>
+    <span class="callbar-tag">Sunshine Coast trades desk</span>
+    <!-- SWAP-PHONE -->
+    <a class="callbar-cta" href="tel:+16045550144">☎ (604) 555-0144</a>
+  </div>
+</div>
+
+<main id="top">
+
+<header class="hero">
+  <span class="stamp">SECHELT · BC</span>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Small jobs. Booked &amp; batched.</p>
+      <h1>We <span class="u">return</span> calls.</h1>
+      <p class="hero-sub">
+        Can't get a Sunshine Coast tradesperson to answer or call back?
+        That's the whole business. One number, a <strong>same-business-day
+        callback</strong> — and if it's an easy fix, we'll just tell you
+        how to handle it yourself, free.
+      </p>
+      <div class="hero-ctas">
+        <!-- SWAP-PHONE -->
+        <a class="btn btn-hivis" href="tel:+16045550144">Call (604) 555-0144</a>
+        <a class="btn btn-ghost" href="#tell-us">Tell us live — chat →</a>
+      </div>
+      <p class="hours"><span class="dot"></span><span id="hourstext">Checking desk hours…</span></p>
+    </div>
+    <aside class="promise" aria-label="Our promise">
+      <h3>The promise</h3>
+      <ul>
+        <li><span class="tick">✓</span><span><b>Every call returned the same business day.</b> Not a slogan. The name.</span></li>
+        <li><span class="tick">✓</span><span><b>Free diagnosis first.</b> If it's DIY-easy, we coach you through it — $0.</span></li>
+        <li><span class="tick">✓</span><span><b>A real answer with a price band</b> — never "we'll get back to you."</span></li>
+        <li><span class="tick">✓</span><span><b>Licensed work to licensed contractors.</b> Always, no exceptions.</span></li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<div class="strip" aria-hidden="true">
+  <div class="strip-track" id="striptrack">
+    <span>Langdale</span><b>◆</b><span>Gibsons</span><b>◆</b><span>Roberts Creek</span><b>◆</b>
+    <span>Davis Bay</span><b>◆</b><span>Sechelt</span><b>◆</b><span>Halfmoon Bay</span><b>◆</b>
+    <span>Pender Harbour</span><b>◆</b><span>Madeira Park</span><b>◆</b>
+    <span>Langdale</span><b>◆</b><span>Gibsons</span><b>◆</b><span>Roberts Creek</span><b>◆</b>
+    <span>Davis Bay</span><b>◆</b><span>Sechelt</span><b>◆</b><span>Halfmoon Bay</span><b>◆</b>
+    <span>Pender Harbour</span><b>◆</b><span>Madeira Park</span><b>◆</b>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Sound familiar</p>
+      <h2>You called four of them.<br>None called back.</h2>
+      <p>It's not rudeness. It's arithmetic.</p>
+    </div>
+    <div class="pain">
+      <div class="pain-card"><span class="num">01</span><h3>Small jobs lose trades money</h3><p>A 45-minute fix can mean an hour of quoting, an hour of driving, and an invoice for less than the fuel. So your message sits unheard.</p></div>
+      <div class="pain-card"><span class="num">02</span><h3>The Coast is spread out</h3><p>Langdale to Pender Harbour is 80&nbsp;km of scattered addresses. One-off trips eat the day before the work even starts.</p></div>
+      <div class="pain-card"><span class="num">03</span><h3>Half of it was DIY anyway</h3><p>Nobody tells you the drip was a 90-second aerator clean. We do — free — before anyone books anything.</p></div>
+    </div>
+    <p class="pain-verdict">The fix isn't nagging harder. It's a desk that <b>answers</b>, tells you honestly whether you even need a tradesperson, and <b>batches</b> the rest into neighbourhood runs so doing it makes someone a proper day.</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How it works</p>
+      <h2>Three steps. One callback.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Tell us the job</h3><p>Call, or use the live chat below. Say what's wrong in plain words — photos if you can. If it's an easy DIY fix, we hand you the steps right there.</p></div>
+      <div class="step"><h3>We call back the same day</h3><p>A person from the desk returns your call the same business day with straight answers: DIY, handyman run, or licensed trade — plus a price band.</p></div>
+      <div class="step"><h3>Booked into a batched run</h3><p>If it needs hands, your job joins others on your street for a scheduled day. Trades get a full day of work; you get someone who actually shows up.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="lanes">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The triage</p>
+      <h2>Three lanes.<br>Right-sized, every time.</h2>
+      <p>Every call lands in exactly one lane — and the cheapest honest one comes first.</p>
+    </div>
+    <div class="lanes">
+      <div class="lane lane-diy">
+        <header>DIY guidance <span class="chip">FREE</span></header>
+        <ul>
+          <li>Dripping tap — aerator &amp; cartridge help</li>
+          <li>Running toilet — the 10-minute flapper fix</li>
+          <li>Dead outlets — find the tripped GFCI</li>
+          <li>Door won't latch — striker &amp; hinge adjust</li>
+          <li>Stuck window — track clean &amp; lube</li>
+          <li>Caulk, grout &amp; furnace filter refresh</li>
+        </ul>
+        <div class="lane-foot">If it's safe and simple, we coach you through it on the spot — no booking, no fee.</div>
+      </div>
+      <div class="lane lane-handyman">
+        <header>Handyman runs <span class="chip">BATCHED</span></header>
+        <ul>
+          <li>Faucet, fixture &amp; washer swaps</li>
+          <li>Doors, locks, hinges &amp; window hardware</li>
+          <li>Drywall patches, paint, caulking</li>
+          <li>Decks, fences, gates &amp; railings</li>
+          <li>Shelving, assembly &amp; to-do-list walls</li>
+          <li>Gutters, pressure washing, bin cleaning &amp; yard smalls</li>
+        </ul>
+        <div class="lane-foot">Vetted Coast roster, booked into neighbourhood runs so small jobs are worth a full day.</div>
+      </div>
+      <div class="lane lane-licensed">
+        <header>Licensed trades <span class="chip">BY THE BOOK</span></header>
+        <ul>
+          <li>Anything gas — TSBC-licensed fitters only</li>
+          <li>Electrical — licensed contractors, permits incl.</li>
+          <li>Suites, duplexes &amp; strata — licensed by law</li>
+          <li>In-wall &amp; permitted plumbing work</li>
+          <li>Appliance repairs — washers, dishwashers, ranges, microwaves (licensed techs; never DIY inside)</li>
+          <li>Structural, roofing &amp; envelope work</li>
+          <li>Anything you'd want inspected — because it should be</li>
+        </ul>
+        <div class="lane-foot">We don't teach regulated DIY. Licensed, insured, permitted — and we still book it for you.</div>
+      </div>
+    </div>
+    <p class="lane-note"><b>Strata jobs — same desk.</b> Strata councils and property managers: batched, logged, returned. DIY items handled as handyman runs; common-property gas/electrical goes licensed by law — same call-back promise.</p>
+    <p class="lane-note"><b>Straight lines, no exceptions:</b> DIY guidance covers safe, simple fixes only — nothing gas, nothing inside the electrical, nothing on a roof or ladder. Licensed work goes to licensed contractors with permits. Whatever the lane, the desk tells you which one you're in on the first callback.</p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What it costs you</p>
+      <h2>The call is free.<br>The fix-it-yourself help is free too.</h2>
+    </div>
+    <div class="price-grid">
+      <div class="price free">
+        <span class="tag">Call or chat the desk</span>
+        <span class="amt">$0</span>
+        <p>Every contact answered or returned the same business day — with an honest lane call, including "you don't need us, here's how you'd do it."</p>
+        <div class="foot">Free. Always. It's the name.</div>
+      </div>
+      <div class="price free">
+        <span class="tag">Diagnosis + price band</span>
+        <span class="amt">$0</span>
+        <p>Text photos of the job; the callback carries a realistic band — likely cost and worst case, assumptions stated. Never a fake-exact phone quote.</p>
+        <div class="foot">Free with every callback.</div>
+      </div>
+      <div class="price">
+        <span class="tag">In-person assessment</span>
+        <span class="amt">$0*</span>
+        <p>If the job needs eyes on it, a visit fee applies — and it's <b>deducted from your invoice</b> when you book the work. Booked job = free visit.</p>
+        <div class="foot">*Assessment fee credited back on booking.</div>
+      </div>
+    </div>
+    <p class="band-note"><b>What a "band" sounds like:</b> <span class="band">faucet swap · likely $180–$260</span> — "if the shutoff valves are seized, worst case $360, and we'll show you before we turn a wrench."</p>
+  </div>
+</section>
+
+<section class="trades" id="trades">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">For Coast tradespeople</p>
+      <h2>Hand us your<br>Nope pile.</h2>
+      <p>You know the voicemails: the $150 drips and wobbles you'll never get back to. Forward them to the desk instead of losing them — your customers get helped, your calendar stays clean, and you look good doing it.</p>
+    </div>
+    <div class="trades-grid">
+      <ul>
+        <li><span class="tick">→</span><span><b>Pre-scoped work:</b> every job arrives described, photographed, and triaged. No phone tag. Ever.</span></li>
+        <li><span class="tick">→</span><span><b>Batched routes:</b> 4–6 jobs in one neighbourhood, one day. Drive once, bill all day.</span></li>
+        <li><span class="tick">→</span><span><b>Your rate card, our arithmetic:</b> estimates computed from <i>your</i> posted rates. The desk prices nothing on its own.</span></li>
+        <li><span class="tick">→</span><span><b>The desk handles the client:</b> reminders, scheduling, and the "so what happens next" calls.</span></li>
+      </ul>
+      <div class="trades-card">
+        <h3>What lands in your pocket</h3>
+        <p>Not a lead. Not a maybe. A booking:</p>
+        <code>THU · DAVIS BAY LOOP — 5 JOBS<br>
+        09:00  faucet + 2 cartridges   · scoped ✓<br>
+        10:30  gate re-hang            · photos ✓<br>
+        13:00  licensed: panel check   · permit ✓<br>
+        <br>est. billable 6.2 hrs @ your card</code>
+      </div>
+    </div>
+    <div class="nope"><b>The Nope pile, handled:</b> hand us a number and that's the whole job — text it, forward the voicemail, email it, two words if you know them ("leaky tap") or zero if you don't. We call it cold, explain who referred them, and take it from there. Tell the customer one sentence on your way out — <i>"I can't take it, but the desk calls you today"</i> — and nobody's blindsided. <b>The boomerang:</b> your referred drip turns out to be a repipe? It comes back to you first. Weekly or twice-weekly roster check-ins, whatever cadence suits you — and white-label if you want the credit: <i>"Rick's office asked us to call you."</i></div>
+    <div style="margin-top:26px">
+      <!-- SWAP-PHONE -->
+      <a class="btn btn-hivis" href="tel:+16045550144">Join the roster — call (604) 555-0144</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LIVE CHAT INTAKE ═══ -->
+<section class="chatsec" id="tell-us">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Tell us live</p>
+      <h2>Describe it. We'll diagnose it.</h2>
+      <p>Chat with the desk's intake right now — typing is fine. If it's an easy fix you'll get the DIY steps immediately; if it's not, your ticket queues for a same-business-day callback from a person.</p>
+    </div>
+    <div class="chatwrap">
+      <div class="chatcard">
+        <header>
+          <span class="who">DESK-AI · live intake<small>Never quotes. Never diagnoses past its lane. A person always closes the loop.</small></span>
+          <button class="btn" style="font-size:12px;padding:9px 14px" id="chatReset">Restart</button>
+        </header>
+        <div class="chatlog" id="chatlog"></div>
+        <div class="chatin">
+          <input id="chatin" placeholder="e.g. “kitchen tap drips nonstop…”" autocomplete="off">
+          <button id="sendBtn">SEND</button>
+        </div>
+        <div class="chatfine" id="chatfine">Emergencies don't belong in a chat box: gas smell → outside + 911 / FortisBC 1-800-663-9911. Active flood or sparks → 911.</div>
+      </div>
+      <aside class="ticket-side">
+        <header>Your ticket <span class="lane-chip" id="laneChip">—</span></header>
+        <dl class="t-fields">
+          <div class="t-row"><dt>Lane</dt><dd id="tLane"></dd></div>
+          <div class="t-row"><dt>Job</dt><dd id="tJob"></dd></div>
+          <div class="t-row"><dt>DIY</dt><dd id="tDiy"></dd></div>
+          <div class="t-row"><dt>Area</dt><dd id="tHood"></dd></div>
+          <div class="t-row"><dt>Urgency</dt><dd id="tUrg"></dd></div>
+          <div class="t-row"><dt>Callback</dt><dd id="tCb"></dd></div>
+        </dl>
+        <div class="log" id="log"><div>// desk log</div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Straight answers</p>
+      <h2>Asked on the Coast.</h2>
+    </div>
+    <details><summary>You'll really help me fix it myself, for free?</summary><div class="a">Yes — when it's a safe, simple fix (aerator, flapper, struck latch, tripped GFCI, caulking). The chat gives you the steps; if any step feels past you, say so and it becomes a booking. We figure the goodwill is worth more than the $95 job, and seniors on the Coast talk.</div></details>
+    <details><summary>Who actually shows up to do the work?</summary><div class="a">A vetted Coast handyman from the roster for handyman-lane jobs, or a licensed contractor when the law or the work calls for it. The desk stays your single point of contact either way — you never chase anyone.</div></details>
+    <details><summary>What if it's a gas or electrical job?</summary><div class="a">Licensed-contractor job by law (Technical Safety BC), booked with a licensed, insured pro, permits where required. If your home has a suite or is attached (duplex, townhouse, strata), most electrical needs a licensed contractor, full stop. We don't coach regulated DIY.</div></details>
+    <details><summary>How fast is "same business day," really?</summary><div class="a">Call or chat before mid-afternoon and you hear from us that day. Evenings and weekends, the next business day. Either way: a straight answer, never voicemail into the void.</div></details>
+    <details><summary>Why a price band instead of one exact number?</summary><div class="a">Honest pricing from photos is a range with assumptions stated. Anyone quoting exact sight-unseen is guessing, and you'll pay for the guess. You get the band first, confirmed on site before work starts.</div></details>
+    <details><summary>What does "batching" mean for me?</summary><div class="a">Your job joins a run with neighbours' jobs — Tuesday in Sechelt, Thursday in Gibsons. That efficiency is the whole reason tradespeople take our small jobs, and why diagnosis stays free.</div></details>
+    <details><summary>Where do you cover?</summary><div class="a">Langdale to Pender Harbour — Gibsons, Roberts Creek, Davis Bay, Wilson Creek, Sechelt, Sandy Hook, Halfmoon Bay, Madeira Park. Outside that, call anyway; if we can't do it fast, we'll say so instead of not calling back.</div></details>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">WE <em>RETURN</em> CALLS</div>
+        <p class="foot-meta">The Sunshine Coast trades desk.<br>Run from Sechelt, BC.</p>
+      </div>
+      <div class="foot-meta">
+        <!-- SWAP-PHONE / SWAP-EMAIL -->
+        <b>Desk:</b> <a href="tel:+16045550144">(604) 555-0144</a><br>
+        <b>Email:</b> <a href="mailto:hello@wereturncalls.ca">hello@wereturncalls.ca</a><br>
+        <b>Web:</b> wereturncalls.ca
+      </div>
+      <div class="foot-meta">
+        <b>Hours:</b> Mon–Fri, desk hours<br>
+        Same-business-day callback, always.<br>
+        Langdale → Pender Harbour
+      </div>
+    </div>
+    <p class="tiny">We Return Calls is a booking and triage desk, not a general contractor. Free DIY guidance covers simple, safe fixes only and is logged; stop and book a pro whenever a step feels past you. Regulated work (gas, electrical, permitted plumbing, and suite/attached/strata work where required by law) is performed only by appropriately licensed and insured contractors. © 2026 We Return Calls · wereturncalls.ca</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ── hours pill ─────────────────────────── */
+(function(){
+  var h=document.getElementById('hourstext'),pill=document.querySelector('.hours');
+  var d=new Date(),day=d.getDay(),hr=d.getHours(),biz=(day>=1&&day<=5);
+  if(biz&&hr>=9&&hr<15){h.textContent='Desk is open — call now, callback today.';}
+  else if(biz&&hr>=15&&hr<18){h.textContent='Late-day calls → callback first thing tomorrow.';pill.classList.add('closed');}
+  else if(biz){h.textContent='After hours — callback tomorrow morning.';pill.classList.add('closed');}
+  else{h.textContent='Weekend — leave the job; callback Monday.';pill.classList.add('closed');}
+})();
+
+/* ═══ CHAT ENGINE — same brain, chat-adapted ═══ */
+const DIY_KW = {
+  aerator:{match:['tap drips','faucet drips','dripping','drip','low pressure','low flow'],
+    title:"Dripping or weak tap — clean the aerator",
+    steps:["Unscrew the aerator (the little cap on the tap's spout) — hand-tight, or pliers with a cloth so you don't scratch it.","Soak the pieces in plain vinegar for 30 minutes, scrub with an old toothbrush, rinse.","Screw it back on snug. If it still drips from the spout itself, that's the cartridge — that's a booking, not a big one."],
+    stop:"Stop and book us if the aerator won't budge, the body is corroded, or water is coming from under the sink — that's beyond this fix."},
+  flapper:{match:['toilet','running water','flapper','phantom flush'],
+    title:"Running toilet — re-seat the flapper",
+    steps:["Take the tank lid off and set it somewhere safe (they break!).","Flush and watch: if water keeps trickling into the bowl, the rubber flapper isn't sealing.","Wipe the flapper's rim and seat, or swap it — universal flappers are ~$10 at the hardware store and clip on in two minutes.","Food-colouring test: a few drops in the tank, wait 15 min — colour in the bowl means it still leaks."],
+    stop:"Stop and book us if the fill valve hisses constantly, the flush handle assembly is cracked, or you see water at the base of the toilet — base water is never DIY."},
+  gfci:{match:['outlet','plug','no power','dead outlet','stopped working','breaker'],
+    title:"Dead outlets — hunt the tripped GFCI",
+    steps:["Find every outlet with little TEST/RESET buttons — bathrooms, kitchen, garage, outside.","Press RESET firmly on each until you hear/feel the click.","Still dead? Check the electrical panel for a breaker sitting between ON and OFF; flip fully OFF, then ON.","If that brings it back and it trips again within days, book the licensed lane — that pattern means something."],
+    stop:"Never open an outlet or panel beyond flipping breakers, never touch wires. Repeated tripping = licensed contractor, we book it."},
+  striker:{match:['door','latch','won\u2019t close',"won't close",'won\u2019t latch',"won't latch",'sticking door'],
+    title:"Door won't latch — adjust the striker plate",
+    steps:["Close the door slowly and watch where the latch hits the plate — usually it's a few millimetres low (houses settle; Coast houses settle cheerfully).","Lipstick or chalk the latch, close it — the mark shows exactly where it lands.","Loosen the striker plate screws, nudge it up, retighten. Still off? Remove the plate and file the opening, or shim behind it with a playing card."],
+    stop:"Stop and call if the door frame is visibly racked or the house has a fresh crack pattern — that's structure talk, not a latch."},
+  windowstick:{match:['window','stuck',"won't open",'won\u2019t open','hard to open'],
+    title:"Stuck window — clean and lube the track",
+    steps:["Open what you can and vacuum the tracks — years of grit is the usual culprit.","Wipe tracks with a damp cloth, then rub a candle or silicone spray on them (silicone, not WD-40, near wood).","Work the window gently back and forth. Painted-shut windows: score the paint seam with a utility knife first."],
+    stop:"A double-hung window that won't STAY UP is a broken balance — parts job, that's us. Don't force anything."},
+  filter:{match:['furnace filter','filter','furnace smell','dusty vents'],
+    title:"Furnace filter swap",
+    steps:["Furnace OFF at the switch or thermostat first.","Slide the old filter out (note the airflow arrow direction), size is printed on the cardboard edge.","New filter in, arrow pointing the same way. Every 2–3 months, monthly with pets.","Dusty-smelling heat after a swap is normal for an hour — it's the burnoff."],
+    stop:"Anything gas-smelling or a furnace that won't light = stop, licensed lane, no DIY past the filter."},
+  caulk:{match:['caulk','caulking','grout','moldy','mouldy','seal around'],
+    title:"Caulk refresh (tub, sink, backsplash)",
+    steps:["Cut out the old bead fully (utility knife + a $4 caulk remover tool) — new caulk over old always fails.","Scrub, then wipe with rubbing alcohol and let it dry completely — moisture under caulk is the #1 fail.","Painter's tape both edges, squeeze a steady bead, smooth with a wet finger, pull tape while wet.","Dry 24 hours before water touches it. Midnight shower is the classic way to wreck it."],
+    stop:"Black mould INSIDE the wall line or soft drywall = more than caulk; book a look."}
+};
+const LICENSED_KW=["gas","furnace light","pilot","gas line","outlet wiring","panel","rewire","new circuit","hot tub","sauna","knob and tube","junction","suite","secondary suite","basement suite","strata","duplex","structural","load bearing","wall removed","reno","renovation","permit","roof","inside the wall","appliance","dishwasher","washing machine","microwave","fridge","freezer","oven","stove","garburator"];
+const HANDYMAN_KW=["faucet","tap","cartridge","gate","fence","hinge","lock","deadbolt","window balance","won\u2019t stay up","drywall","patch","paint","deck","railing","gutter","shelf","shelves","hang","assemble","assembly","pressure wash","power wash","bin clean","garbage bin","garbage can","trash bin","squeak","trim","baseboard","curtain rod","closet"];
+const EMERGENCY_KW=["smell gas","gas smell","sparking","sparks","smoke","fire","flooding","flood","burst pipe","water everywhere","carbon monoxide"];
+const PRICE_KW=["how much","price","cost","exact","quote","charge","estimate"];
+const HUMAN_KW=["human","real person","person","robot","bot","are you real","machine","speak to someone"];
+const HOODS=["langdale","gibsons","roberts creek","davis bay","wilson creek","sechelt","sandy hook","tuwanek","halfmoon bay","pender harbour","madeira park"];
+const AFFIRM=["yes","yeah","yep","correct","fixed","worked","that did it","sorted","done it","it works"];
+
+const CS={};
+function resetChat(){Object.assign(CS,{stage:"OPEN",job:null,lane:null,diy:null,diyOutcome:null,hood:null,urg:null,callback:null,name:null,priceDeflects:0,logged:[]});renderTicket();}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function log(msg,flag){const t=document.getElementById('log');const el=document.createElement('div');el.innerHTML=(flag?'<span class="g">▸ '+flag+'</span> ':'')+esc(msg);t.appendChild(el);t.scrollTop=t.scrollHeight;CS.logged.push(msg);}
+function renderTicket(){
+  const set=(id,v)=>{document.getElementById(id).textContent=v||'';};
+  set('tJob',CS.job);set('tHood',CS.hood);set('tUrg',CS.urg);
+  set('tDiy',CS.diy?CS.diy.title:(CS.lane==='LICENSED'||CS.lane==='HANDYMAN'?'not DIY-able':'—'));
+  set('tCb',CS.callback);
+  const chip=document.getElementById('laneChip');
+  chip.textContent=CS.lane||(CS.diy?'DIY — FREE':'—');
+  chip.className='lane-chip '+(CS.lane==='HANDYMAN'?'handyman':CS.lane==='LICENSED'?'licensed':CS.lane==='EMERGENCY'?'emergency':(CS.diy?'diy':''));
+  set('tLane',CS.diy&&!CS.lane?'DIY guidance (free, logged)':(CS.lane||''));
+}
+
+/* responses: return {lines:[bubbles], quick:[...]} */
+function chatRespond(raw){
+  const l=(raw||'').toLowerCase();
+
+  if(EMERGENCY_KW.some(k=>l.includes(k))){
+    CS.lane='EMERGENCY';renderTicket();log('emergency keywords — chat shows the card','GUARDRAIL');
+    return {lines:["⚠ Stop typing — if you smell gas, see sparks or smoke, or water is flooding: move away from it now. Gas: leave the house and call 911 or FortisBC 1-800-663-9911 from outside. Flood/sparks: 911.","This desk is not for emergencies. Once you're safe, come back or call the desk and we'll handle the follow-up work the same day."],quick:[["I'm safe — continue","im safe"]]}
+  }
+  if(l==='im safe'){return {lines:["Good. Tell me plainly what was happening before the emergency and we'll take it from there."],quick:[]}}
+
+  if(PRICE_KW.some(k=>l.includes(k))&&CS.stage!=="CBNUM"){
+    CS.priceDeflects++;log('price deflect #'+CS.priceDeflects,'GUARDRAIL');
+    const base="Fair question — we don't quote exact sight-unseen; that's how people get stung. What you get, free: a realistic price band on your callback, assumptions stated.";
+    return {lines:CS.priceDeflects>=2?[base+" " + "Bands beat fake precision — anyone quoting exact on a photo is guessing."]:[base],quick:[]};
+  }
+  if(HUMAN_KW.some(k=>l.includes(k)) && !LICENSED_KW.some(k=>l.includes(k)) && !HANDYMAN_KW.some(k=>l.includes(k)) && !Object.keys(DIY_KW).some(id=>DIY_KW[id].match.some(m=>l.includes(m)))){
+    log('human-demand — chat offers the desk line');
+    return {lines:["This part is the desk's automated intake — the human comes next. Anything you tell me here lands on a real person's desk for a same-business-day callback. If you'd rather skip chat entirely: <b>(604) 555-0144</b>.","So — what's the job, in plain words?"],quick:[]};
+  }
+
+  const hood=HOODS.find(h=>l.includes(h));
+  if(hood&&!CS.hood){CS.hood=hood.charAt(0).toUpperCase()+hood.slice(1);log('area from chat: '+CS.hood);renderTicket();}
+
+  switch(CS.stage){
+    case "OPEN":{
+      CS.job=raw.trim();
+      const diyHit=Object.keys(DIY_KW).find(id=>DIY_KW[id].match.some(m=>l.includes(m)));
+      if(LICENSED_KW.some(k=>l.includes(k))){CS.lane='LICENSED';log('licensed-lane: '+LICENSED_KW.find(k=>l.includes(k)),'TRIAGE');}
+      // DIY beats handyman when both match — cheapest honest lane comes first, always
+      renderTicket();
+      if(CS.lane==='LICENSED'){
+        CS.stage='HOOD';
+        return {lines:["Got it: <i>“"+esc(raw)+'”</i>.',"Heads-up before anything else: that lands in the <b>licensed lane</b> — BC law requires a licensed, insured contractor for that work, and we don't coach regulated DIY. We still book it, batch it, and call you back today with the band.","Which part of the Coast are you on?"],quick:[["Sechelt","Sechelt"],["Gibsons","Gibsons"],["Roberts Creek","Roberts Creek"],["Halfmoon Bay","Halfmoon Bay"],["Pender Harbour","Pender Harbour"]]};
+      }
+      if(diyHit&&!CS.lane){
+        CS.diy=DIY_KW[diyHit];CS.stage="DIYCHECK";
+        renderTicket();log('DIY candidate: '+CS.diy.title,'TRIAGE');
+        const steps=CS.diy.steps.map((s,i)=>'<li>'+esc(s)+'</li>').join('');
+        return {lines:["Good news first — that's usually a DIY-fixable one, and it's free either way. Try this:","<b>"+CS.diy.title+"</b><ol>"+steps+'</ol><div class="stop"><b>Stop line:</b> '+esc(CS.diy.stop)+'</div>',"Did that sort it — or is it bigger than it looked?"],quick:[["Fixed it! ✓","fixed it"],["Still stuck — book me","still stuck"],["Feels past me — book it","feels past me"]]};
+      }
+      if(!CS.lane&&HANDYMAN_KW.some(k=>l.includes(k))){CS.lane='HANDYMAN';log('handyman-lane: '+HANDYMAN_KW.find(k=>l.includes(k)),'TRIAGE');}
+      if(CS.lane==='HANDYMAN'){CS.stage='HOOD';renderTicket();
+        return {lines:["Got it: <i>“"+esc(raw)+'”</i> — that reads as a handyman job, which means the batched runs.','Which part of the Coast are you on?'],quick:[["Sechelt","Sechelt"],["Gibsons","Gibsons"],["Roberts Creek","Roberts Creek"],["Davis Bay","Davis Bay"],["Halfmoon Bay","Halfmoon Bay"],["Pender Harbour","Pender Harbour"]]};
+      }
+      {CS.stage='HOOD';renderTicket();
+        return {lines:["Got it: <i>“"+esc(raw)+'”</i>. Desk eyes will triage this one on the callback — could be either lane.','Which part of the Coast are you on?'],quick:[["Sechelt","Sechelt"],["Gibsons","Gibsons"],["Roberts Creek","Roberts Creek"],["Halfmoon Bay","Halfmoon Bay"],["Pender Harbour","Pender Harbour"]]};}
+    }
+    case "DIYCHECK":{
+      if(AFFIRM.some(k=>l.includes(k))){
+        CS.diyOutcome='fixed — no booking';CS.callback='none needed ✓';CS.stage='DONE';renderTicket();
+        log('DIY RESOLVED — no revenue, logged as goodwill','LEDGER');
+        return {lines:["Beauty. Total cost: a few minutes and $0.","That's the desk's favourite outcome — and when something bigger comes along (it always does), you know where we are. Tell a neighbour; half the Coast has a list like yours.","Anything else on the fix-it list while you're here?"],quick:[["That's all — thanks","thats all"],["Actually, one more thing…","one more thing"]]};
+      }
+      CS.diyOutcome='attempted — converting to booking';log('DIY → booking convert','LANE');
+      if(!CS.lane){CS.lane='HANDYMAN';log('DIY library = handyman-safe scope, lane locked','TRIAGE');}
+      CS.stage='HOOD';renderTicket();
+      return {lines:["Fair enough — some of them fight back. Converting to a booking; nothing lost.","Which part of the Coast are you on?"],quick:[["Sechelt","Sechelt"],["Gibsons","Gibsons"],["Roberts Creek","Roberts Creek"],["Halfmoon Bay","Halfmoon Bay"],["Pender Harbour","Pender Harbour"]]};
+    }
+    case "HOOD":{
+      if(!CS.hood) CS.hood=raw.trim();
+      CS.stage="URG";renderTicket();
+      return {lines:["And how urgent is it?"],quick:[["Whenever's fair","whenever's fair"],["This week","this week"],["Getting worse","getting worse"],["Safety worry","safety worry"]],};
+    }
+    case "URG":{
+      if(l.includes('safety'))CS.urg='Safety — today';
+      else if(l.includes('worse'))CS.urg='Getting worse';
+      else if(l.includes('week'))CS.urg='This week';
+      else if(l.includes('today'))CS.urg='Today if possible';
+      else CS.urg='Whenever’s fair';
+      CS.stage="CBNUM";renderTicket();
+      return {lines:["Last piece: a name and the best callback number. A person from the desk calls you today with the lane, the band, and the next batched run in your area.","After you book, text job photos to the same number — photos price jobs."],quick:[]};
+    }
+    case "CBNUM":{
+      const d=l.replace(/[^\d]/g,'');
+      CS.name=raw.trim().split(/\d/)[0].trim()||raw.trim();
+      CS.callback=d.length>=7?d.slice(0,10).replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3'):raw.trim();
+      CS.stage="DONE";renderTicket();
+      log('ticket queued for same-business-day callback','DESK');
+      return {lines:["You're in the queue, <b>"+esc(CS.name)+"</b>.","Ticket reads: <i>"+esc(CS.job||'—')+"</i> · "+esc(CS.hood||'—')+" · "+esc(CS.urg||'—')+" · lane: <b>"+esc(CS.lane||'desk triage')+"</b>. Callback today on "+esc(CS.callback)+".","Prefer to talk it through first? The desk line is <b>(604) 555-0144</b>. It's what we're named for — we return calls."],quick:[["All set","all set"]]};
+    }
+    case "DONE":{
+      if(l.includes('one more thing')||l.includes('another')){CS.stage="OPEN";CS.job=null;CS.diy=null;CS.lane=null;renderTicket();return {lines:["Go ahead — what's the next one?"],quick:[]};}
+      return {lines:["Easy. The desk has your ticket — expect the call today. And if the fix-it list grows: we're a bookmark away."],quick:[]};
+    }
+  }
+}
+
+/* UI plumbing */
+const CLOG=document.getElementById('chatlog');
+function bub(who,html,quick){
+  const row=document.createElement('div');row.className='line '+who;
+  const w=document.createElement('div');w.className='who';
+  w.textContent=who==='bot'?'DESK-AI':who==='sys'?'':'YOU';
+  const b=document.createElement('div');b.className='bub';b.innerHTML=html;
+  row.appendChild(w);row.appendChild(b);CLOG.appendChild(row);
+  if(quick&&quick.length){
+    const q=document.createElement('div');q.className='quick';
+    quick.forEach(([label,val])=>{const qb=document.createElement('button');qb.className='q';qb.textContent=label;
+      qb.addEventListener('click',()=>{sendChat(val);});q.appendChild(qb);});
+    b.appendChild(q);
+  }
+  CLOG.scrollTop=CLOG.scrollHeight;
+}
+function botReply(lines,quick){
+  const row=document.createElement('div');row.className='line bot';
+  const w=document.createElement('div');w.className='who';w.textContent='DESK-AI';
+  const b=document.createElement('div');b.className='bub';
+  b.innerHTML='<span class="typing"><i></i><i></i><i></i></span>';
+  row.appendChild(w);row.appendChild(b);CLOG.appendChild(row);CLOG.scrollTop=CLOG.scrollHeight;
+  setTimeout(()=>{
+    b.innerHTML=lines[0];
+    if(quick&&quick.length){
+      const q=document.createElement('div');q.className='quick';
+      quick.forEach(([label,val])=>{const qb=document.createElement('button');qb.className='q';qb.textContent=label;qb.addEventListener('click',()=>sendChat(val));q.appendChild(qb);});
+      b.appendChild(q);
+    }
+    CLOG.scrollTop=CLOG.scrollHeight;
+    lines.slice(1).forEach((ln,i)=>setTimeout(()=>bub('bot',ln),(i+1)*700));
+  },480+Math.random()*320);
+}
+function sendChat(text){
+  const v=(text||'').trim();if(!v)return;
+  bub('human',esc(v));
+  const r=chatRespond(v);
+  botReply(r.lines,r.quick);
+}
+document.getElementById('sendBtn').addEventListener('click',()=>{const i=document.getElementById('chatin');sendChat(i.value);i.value='';i.focus();});
+document.getElementById('chatin').addEventListener('keydown',e=>{if(e.key==='Enter'){sendChat(e.target.value);e.target.value='';}});
+document.getElementById('chatReset').addEventListener('click',startChat);
+function startChat(){
+  resetChat();
+  document.getElementById('log').innerHTML='<div>// desk log</div>';
+  CLOG.innerHTML='';
+  bub('sys',"Live intake — free DIY steps when it's simple, human callback when it's not. This chat never quotes exact prices.");
+  botReply(["What's going on at your place? Plain words are perfect — <i>“kitchen tap drips all night”</i> beats plumbing language every time."]);
+}
+startChat();
+</script>
+</body>
+</html>

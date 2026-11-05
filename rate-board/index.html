@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>We Return Calls — Coast Rate Board (draft v0)</title>
+<!--
+  ══════════════════════════════════════════════════════════════════════
+  WE RETURN CALLS — RATE BOARD · DRAFT v0.1 (research, 2026-11-05)
+  · INTERNAL DRAFT + supply-test prop. NOT public. Not linked from site yet.
+  · Every number cites SOURCE-LOG.md (same folder). Nothing invented.
+  · Tags:  OBSERVED = live local listing · PUBLISHED = city price card/guide
+           ANCHORED = Job Bank wage × 2.0–3.5 (method in log) · COLLECTING = supply test
+  · Update path: 5 trade conversations → rate cards → delta log → v1.0 refresh
+  · GUARDRAIL (locked): trade-generic; never a named business next to a number;
+    always "typical band, not a quote — the desk's estimate is the quote".
+  ══════════════════════════════════════════════════════════════════════
+-->
+<style>
+  :root{
+    --paper:#F4EFE4; --paper-2:#EAE2D0; --ink:#1C2420; --ink-soft:#3D463F;
+    --hivis:#FF5A1F; --hivis-deep:#D8430F; --pine:#1E4D3B; --pine-bright:#2A6B51;
+    --sky:#BFD8D2; --warn:#C0392B;
+    --line:3px solid var(--ink); --sh:7px 7px 0 var(--ink); --sh-sm:4px 4px 0 var(--ink);
+    --font-d:"Arial Black","Archivo Black",Arial,Helvetica,sans-serif;
+    --font-b:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --rad:2px; --max:1120px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-b);font-size:17.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--hivis);color:#fff}
+  a{color:var(--pine-bright)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  h1,h2,h3,.display{font-family:var(--font-d);line-height:1.05;letter-spacing:-.5px}
+  .eyebrow{font-family:var(--font-d);font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--pine)}
+
+  .callbar{position:sticky;top:0;z-index:50;background:var(--ink);color:var(--paper);border-bottom:3px solid var(--hivis)}
+  .callbar .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
+  .wordmark{font-family:var(--font-d);font-size:15px;color:var(--paper)}
+  .wordmark em{font-style:normal;color:var(--hivis)}
+  .chip{font-family:var(--font-d);font-size:12px;letter-spacing:1.5px;color:#fff;background:var(--warn);border:3px solid var(--ink);padding:8px 14px;transform:rotate(-1.5deg)}
+
+  header.hero{padding:clamp(36px,6vw,64px) 0 30px}
+  .hero h1{font-size:clamp(34px,5.4vw,62px);text-transform:uppercase;margin:12px 0 14px}
+  .hero h1 .u{text-decoration:underline;text-decoration-color:var(--hivis);text-decoration-thickness:8px;text-underline-offset:6px}
+  .hero p.lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);max-width:60ch}
+  .notice{margin-top:26px;background:#fff;border:var(--line);box-shadow:var(--sh-sm);border-radius:var(--rad);padding:18px 22px;font-size:16.5px}
+  .notice b{color:var(--warn)}
+  .notice .tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-family:var(--font-d);font-size:11px;letter-spacing:1.2px;color:#fff;padding:5px 10px;border-radius:var(--rad)}
+  .tag.obs{background:var(--hivis)} .tag.pub{background:var(--pine)} .tag.anch{background:#8A6D1C} .tag.col{background:#6B7280}
+
+  section{padding:clamp(40px,6vw,72px) 0;border-bottom:var(--line)}
+  .sec-head{margin-bottom:clamp(22px,4vw,40px);max-width:760px}
+  .sec-head h2{font-size:clamp(26px,3.8vw,44px);text-transform:uppercase;margin-top:10px}
+  .sec-head p{color:var(--ink-soft);margin-top:12px}
+
+  .board{border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);background:#fff;overflow:hidden;width:100%;border-collapse:collapse}
+  .board th{font-family:var(--font-d);font-size:13px;letter-spacing:1px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:14px 14px;text-align:left;vertical-align:bottom}
+  .board td{padding:16px 14px;border-top:2px solid var(--paper-2);vertical-align:top;font-size:16px}
+  .board tr.coast td{background:#fff}
+  .board .trade{font-family:var(--font-d);font-size:15.5px}
+  .board .coast-b{font-family:var(--font-d);font-size:19px;color:var(--pine)}
+  .board .van-b{font-family:var(--font-d);font-size:19px}
+  .board .gap{font-family:var(--font-d);font-size:16px;color:var(--hivis-deep)}
+  .board .basis{font-size:13.5px;color:var(--ink-soft);display:block;margin-top:6px}
+  .board .co{font-size:14.5px;color:var(--ink-soft)}
+  .board .callout{white-space:nowrap;font-size:15px}
+  .board-foot{background:var(--paper-2);padding:16px 20px;font-size:15px;border-top:var(--line)}
+  .board-foot b{color:var(--warn)}
+  @media (max-width:760px){
+    .board{display:block;overflow-x:auto}
+    .board thead,.board tbody,.board tr,.board td,.board th{display:inline-block}
+    .board tr.coast{display:table-row}
+    .board thead{display:none}
+    .board td{border:none;padding:6px 10px}
+    .board tr.coast td{display:inline-block;min-width:44%}
+  }
+
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media (max-width:860px){.duo{grid-template-columns:1fr}}
+  .panel{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);padding:26px 24px}
+  .panel h3{font-size:16px;letter-spacing:1.2px;text-transform:uppercase;background:var(--ink);color:var(--paper);display:inline-block;padding:6px 12px;margin-bottom:16px}
+  .panel table{width:100%;border-collapse:collapse;font-size:15.5px}
+  .panel td{padding:9px 6px;border-bottom:2px dashed var(--paper-2)}
+  .panel td.num{font-family:var(--font-d);white-space:nowrap}
+  .panel tr.total td{border-top:var(--line);border-bottom:none;font-weight:700}
+  .verdict{margin-top:26px;background:var(--ink);color:var(--paper);padding:22px 26px;border-radius:var(--rad);font-size:18px;max-width:900px}
+  .verdict b{color:var(--hivis)}
+  .verdict .sub{display:block;margin-top:10px;font-size:15px;color:#B9C2BC}
+
+  .path{counter-reset:stp;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:var(--line);border-radius:var(--rad);overflow:hidden;box-shadow:var(--sh-sm);background:var(--ink)}
+  @media (max-width:900px){.path{grid-template-columns:1fr}}
+  .path .step{background:#fff;padding:24px 22px 28px;position:relative}
+  .path .step+.step{border-left:var(--line)}
+  @media (max-width:900px){.path .step+.step{border-left:none;border-top:var(--line)}}
+  .path .step::before{counter-increment:stp;content:counter(stp);display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--hivis);color:#fff;font-family:var(--font-d);font-size:20px;border-radius:50%;margin-bottom:14px}
+  .path h3{font-size:16.5px;margin-bottom:8px}
+  .path p{font-size:15px;color:var(--ink-soft)}
+
+  .logbar{display:inline-flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:14px;background:var(--sky);border:2px solid var(--ink);padding:10px 14px;border-radius:var(--rad);font-family:var(--font-mono,monospace);font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  footer{padding:34px 0 44px;font-size:14.5px;color:var(--ink-soft)}
+  footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="callbar">
+  <div class="wrap">
+    <a class="wordmark" href="../site/index-v2.html">WE RETURN <em>CALLS</em> — COAST TRADES DESK</a>
+    <span class="chip">DRAFT v0 · INTERNAL + SUPPLY-TEST PROP — NOT PUBLIC</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">The rate board · research draft</span>
+    <h1>WHAT COAST TRADES <span class="u">ACTUALLY CHARGE</span></h1>
+    <p class="lede">Sunshine Coast hourly bands, cross-referenced against Vancouver.
+    v0 is built from published market research and one live Coast listing — every number
+    tagged by how it was sourced. As trades hand over rate cards, each band hardens from
+    research into real, and this board carries a version number every time it moves.</p>
+    <div class="notice">
+      <b>Typical Coast band — not a quote.</b> The desk's estimate is the quote. Bands are
+      trade-generic: no named business ever appears next to a number. Numbers land here
+      corrected by five trade conversations before this page ever goes public.
+      <div class="tags">
+        <span class="tag pub">PUBLISHED — city/firm price card</span>
+        <span class="tag obs">OBSERVED — live Coast listing</span>
+        <span class="tag anch">ANCHORED — Job Bank wage × 2.0–3.5</span>
+        <span class="tag col">COLLECTING — supply test</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Main board</span>
+      <h2>Coast × Vancouver, side by side</h2>
+      <p>Customer-facing hourly bands for solo-to-small-shop operators — the lane the desk
+      serves. City figures include big-company rates (higher); Coast anchored on worker wages
+      where no local card is published yet.</p>
+    </div>
+    <table class="board">
+      <thead>
+        <tr>
+          <th style="width:16%">Trade</th>
+          <th style="width:22%">Sunshine Coast $/hr</th>
+          <th style="width:20%">Vancouver / LM $/hr</th>
+          <th style="width:11%">Coast vs city</th>
+          <th style="width:14%">Call-out / minimum</th>
+          <th style="width:17%">Basis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="coast">
+          <td class="trade">Handyman</td>
+          <td><span class="coast-b">$60–90</span><span class="basis">live coastwide ad bills <b>$65/hr</b></span></td>
+          <td><span class="van-b">$60–145</span><span class="basis">solo $40–55 … premium $145 + $290 2-h min</span></td>
+          <td class="gap">≈27% under city mid</td>
+          <td class="callout">Coast: collecting<br>Van: $100–150 norm</td>
+          <td><span class="tag obs">OBSERVED</span> <span class="tag pub">PUBLISHED</span><span class="basis">Craigslist Coastwide ad · urbantasker BC $60–90 · handld (rural −20–30%)</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Plumber</td>
+          <td><span class="coast-b">$70–125</span><span class="basis">anchored on Coast-region wages (med $35.20)</span></td>
+          <td><span class="van-b">$110–190</span><span class="basis">BC std $90–150; Van/LM $110–190</span></td>
+          <td class="gap">≈35% under city mid</td>
+          <td class="callout">Coast: collecting<br>Van: $68 credited · $79 + $200 min</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (Van)</span><span class="basis">Job Bank Islands&Coast wage med $35.20 × 2.0–3.5 · LM firm cards</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Electrician</td>
+          <td><span class="coast-b">$65–115</span><span class="basis">anchored on Coast-region wages (med $33.28)</span></td>
+          <td><span class="van-b">$100–150</span><span class="basis">first hour $250 common; svc-call norm $100–300</span></td>
+          <td class="gap">≈28% under city mid</td>
+          <td class="callout">Coast: collecting<br>Van: $100–300 svc call</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (Van)</span><span class="basis">Job Bank Islands&Coast med $33.28 × 2.0–3.5 · BC electrical guide</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Carpenter</td>
+          <td><span class="coast-b">$65–110</span><span class="basis">anchored on Coast-region wages (med $32.00)</span></td>
+          <td><span class="van-b">$55–120</span><span class="basis">platform floor "from $55"; high end thin</span></td>
+          <td class="gap">≈ city parity</td>
+          <td class="callout">collecting both</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag pub">PUBLISHED (floor)</span><span class="basis">Job Bank Islands&Coast med $32.00 × 2.0–3.5 · framing/built-ins quote by job</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Gas fitter / HVAC</td>
+          <td><span class="coast-b">$75–130</span><span class="basis">anchored on Coast-region wages (med $37.18)</span></td>
+          <td><span class="van-b">collecting</span><span class="basis">no published city card in sweep; LM wages $41–70</span></td>
+          <td class="gap">—</td>
+          <td class="callout">collecting both</td>
+          <td><span class="tag anch">ANCHORED</span> <span class="tag col">COLLECTING (Van)</span><span class="basis">Job Bank Islands&Coast med $37.18 × 2.0–3.5 · regulated lane — supply test collects</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Painter</td>
+          <td><span class="coast-b">$50–85</span><span class="basis">vetted/insured small crews; uninsured solos run $25–45 below desk floor</span></td>
+          <td><span class="van-b">$55–85</span><span class="basis">LM insured-crew guide; freelance $25–50</span></td>
+          <td class="gap">≈ city parity</td>
+          <td class="callout">collecting both</td>
+          <td><span class="tag pub">PUBLISHED</span> <span class="tag anch">ADJ.</span><span class="basis">LM guide $55–85 · ProWorks BC tiers · barrier-free trade — wide solo dispersion</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="board-foot">
+      <b>How to read the gap:</b> the Coast bills well under city company rates for the big-overhead
+      trades (plumbing, electrical, handyman) and matches the city on the low-overhead ones
+      (carpentry, painting). The gap is overhead and competition density — <b>not cheaper trades</b>.
+      Wages prove it below.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Service add-ons · v0.2</span>
+      <h2>Bins, power washing &amp; appliance fixes</h2>
+      <p>Unit-priced services the desk also books and batches. Different units, same rules:
+      trade-generic, not a quote, and tagged by how the number was sourced.</p>
+    </div>
+    <table class="board">
+      <thead>
+        <tr>
+          <th style="width:17%">Service</th>
+          <th style="width:24%">Sunshine Coast pricing</th>
+          <th style="width:26%">Vancouver / LM pricing</th>
+          <th style="width:33%">Desk angle + basis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="coast">
+          <td class="trade">Garbage bin cleaning<br><span style="font-family:var(--font-b);font-size:13px">per can, per visit</span></td>
+          <td><span class="coast-b">collecting</span><span class="basis">local operators welcome: one truck, one street, collection-day run</span></td>
+          <td><span class="van-b">$20–50 per can</span> one-time<br><span class="basis">plans $7.99–14.99/can per clean · volume drops to ~$15–25</span></td>
+          <td><span class="tag obs">SHAPE</span> <span class="tag col">COLLECTING (Coast)</span><span class="basis">A coast street-run (8–14 cans, one collection-day morning) beats the city one-time price outright. Wastewater-capture rig required — no storm-drain rinsing. Published city card: Metro Van operators (one-time $24.99–50; plans from $14.99/mo)</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Power washing<br><span style="font-family:var(--font-b);font-size:13px">per m² + flat jobs</span></td>
+          <td><span class="coast-b">$5/m² fixed</span><br><span class="basis">min job $85 · typical $200 — published, Coast-area card</span></td>
+          <td><span class="van-b">$5/m²</span> · driveway $150–250<br><span class="basis">full home exterior $300–600 · platform from $45/hr</span></td>
+          <td><span class="tag pub">PUBLISHED</span> <span class="tag col">COLLECTING (locals)</span><span class="basis">City parity here — moss + wet winters keep demand strong on the Coast. Handyman-lane: ground-level surfaces, customer's water access; never roofs/ladder-height. Batched with bin runs = one truck, two services.</span></td>
+        </tr>
+        <tr class="coast">
+          <td class="trade">Appliance repairs<br><span style="font-family:var(--font-b);font-size:13px">service call + rates</span></td>
+          <td><span class="coast-b">collecting</span><span class="basis">rural techs price the visit — expect travel add-on</span></td>
+          <td><span class="van-b">$100–180</span> service call<br><span class="basis">labour $100–175/hr · washer job $150–500 · dishwasher $130–380</span></td>
+          <td><span class="tag pub">PUBLISHED (Van)</span> <span class="tag col">COLLECTING (Coast)</span><span class="basis">LICENSED lane: appliance techs only — never DIY inside an appliance (microwave capacitors, gas dryers = gas fitter). Desk multi-applies a run: fridge + washer + dishwasher in one tech visit instead of three service calls.</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="board-foot">
+      <b>Why these three:</b> they ride the same batching engine as everything else — a bin run
+      and a power wash share one truck; an appliance tech visit covers three appliances in one
+      stop. All three harden to real numbers the same way: <b>rate cards from the supply test</b>.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The wage cross-check</span>
+      <h2>The Coast doesn't pay trades less — it's just hard to get one</h2>
+      <p>Worker wages (not billing), Statistics Canada Job Bank, updated Nov 19, 2025.
+      "Islands & Coast" is the region containing the Sunshine Coast. If the trades' take-home
+      is city-level, the service-price gap above is our batching case — the supply-test pitch
+      writes itself: <i>same money, less dead calendar, jobs that actually fit your day.</i></p>
+    </div>
+    <table class="board">
+      <thead>
+        <tr>
+          <th style="width:22%">Trade</th>
+          <th style="width:26%">Islands & Coast — low / med / high</th>
+          <th style="width:26%">Lower Mainland–SW — low / med / high</th>
+          <th style="width:26%">BC — low / med / high</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="coast"><td class="trade">Plumber</td><td>$25.51 / <b>$35.20</b> / $44.76</td><td>$22.00 / <b>$30.00</b> / $48.00</td><td>$23.00 / $32.00 / $48.00</td></tr>
+        <tr class="coast"><td class="trade">Electrician</td><td>$21.60 / <b>$33.28</b> / $44.42</td><td>$21.82 / <b>$34.57</b> / $47.69</td><td>$20.00 / $34.00 / $47.49</td></tr>
+        <tr class="coast"><td class="trade">Carpenter</td><td>$23.08 / <b>$32.00</b> / $45.00</td><td>collecting</td><td>$23.00 / $32.00 / $43.71</td></tr>
+        <tr class="coast"><td class="trade">Gas fitter</td><td>$24.90 / <b>$37.18</b> / $49.15</td><td>$33.13 / <b>$39.84</b> / $54.59</td><td>$25.97 / $39.82 / $56.72</td></tr>
+        <tr class="coast"><td class="trade">Painter</td><td>$22.00 / <b>$27.00</b> / $32.40</td><td>collecting</td><td>$21.00 / $28.00 / $35.00</td></tr>
+      </tbody>
+    </table>
+    <div class="verdict">
+      <b>Plumber:</b> Coast-region median wage $35.20 vs Vancouver-region $30.00 — the Coast pays
+      its trades <b>more</b>, not less. Scarcity is real; price is not the lever. <b>The desk's lever
+      is filling dead calendar with batched runs and taking the Nope pile off their voicemail.</b>
+      <span class="sub">Source: Job Bank prevailing-wage tables (Vancouver Island and Coast Region vs
+      Lower Mainland–Southwest), updated 2025-11-19 · full citations in SOURCE-LOG.md.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Small-job reality check</span>
+      <h2>What "too small to bother" costs in the city</h2>
+      <p>A published Vancouver fixed-price card (shown anonymously — no firm name rides next to a
+      number), 2026. $79 call-out, then a $200 minimum on any work, on top. Prices include labour
+      with a 2-year guarantee. <b>Coast equivalents are being collected in the supply test</b> —
+      batched-run pricing is where the desk should beat this card outright.</p>
+    </div>
+    <div class="duo">
+      <div class="panel">
+        <h3>Vancouver card — common small jobs</h3>
+        <table>
+          <tr><td>Bathroom faucet cartridge, repair/replace</td><td class="num">$126</td></tr>
+          <tr><td>Kitchen faucet cartridge, repair/replace</td><td class="num">$251</td></tr>
+          <tr><td>Faucet swap (customer-supplied), bathroom</td><td class="num">$213</td></tr>
+          <tr><td>Faucet swap (customer-supplied), kitchen</td><td class="num">$395</td></tr>
+          <tr><td>Reset toilet wax seal</td><td class="num">$323</td></tr>
+          <tr><td>Replace shutoff valve</td><td class="num">$219</td></tr>
+          <tr><td>Garburator, customer-supplied</td><td class="num">$313</td></tr>
+          <tr><td>Install customer-supplied toilet</td><td class="num">$487</td></tr>
+          <tr><td>Install customer-supplied dishwasher</td><td class="num">$509</td></tr>
+          <tr><td>Install customer-supplied water heater</td><td class="num">$895</td></tr>
+          <tr class="total"><td>Plus call-out fee</td><td class="num">$79 + $200 min</td></tr>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>What the desk does with this</h3>
+        <table>
+          <tr><td>Batch 4–6 of these into one neighbourhood run → one trip, no $79+padding minimums, no city-van travel</td><td class="num">coast pricing wins</td></tr>
+          <tr><td>Customer-supplied fixtures on most swaps (desk copy already says "text photos — photos price jobs")</td><td class="num">saves 20–40%</td></tr>
+          <tr><td>Assessment visit at $0-with-booking when confidence is needs-eyes — never quote a shaky band</td><td class="num">trust move</td></tr>
+          <tr><td>Same card data becomes the desk's comparison rows the moment Coast trades confirm rates</td><td class="num">v1.0 goal</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How the numbers get real</span>
+      <h2>From research draft to rate cards</h2>
+    </div>
+    <div class="path">
+      <div class="step"><h3>Supply test — 5 trade conversations</h3><p>This board is the prop. Every call asks "is this right for the Coast?" — each correction is an easy yes for the trade, and the ask feels like research, not recruitment.</p></div>
+      <div class="step"><h3>Rate cards — one per trade</h3><p>The 9-field tailgate sheet (rates by job type, markup %, call-out, permits, job templates, hours, radius, capacity). Desk prices from the card only, never on its own.</p></div>
+      <div class="step"><h3>Delta log — estimate vs final</h3><p>Every completed job logs band-given vs invoiced. Quarterly review refreshes the board so bands never go stale (stale bands burn trust).</p></div>
+      <div class="step"><h3>v1.0 — corrected, then public</h3><p>Research tags retire; bands stand on trade cards. Public copy stays trade-generic, "not a quote," no named businesses. Goes live on wereturncalls.ca on Sam's go.</p></div>
+    </div>
+    <p style="margin-top:26px">
+      <span class="logbar"><b>v0.2</b> 2026-11-05 — research build + service add-ons (bins / power washing / appliance) · next tag: supply-test corrections</span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>Internal draft.</b> Not yet linked from the public site; not deployable. Numbers are
+    research-grade and tagged; the board ships public only after the five supply-test
+    conversations, on the owner's go. Source log with every citation:
+    <a href="SOURCE-LOG.md">SOURCE-LOG.md</a> (same folder). © 2026 We Return Calls · wereturncalls.ca</p>
+  </div>
+</footer>
+
+</body>
+</html>

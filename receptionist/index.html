@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desk Engine v0 — We Return Calls intake prototype</title>
+<!--
+  DESK ENGINE v0 — the AI-receptionist BRAIN, no telephony.
+  Purpose: test the intake script + guardrails + lane triage BEFORE buying pipes.
+  Production mapping (footer cards): Twilio number → voice stack (Retell/Vapi)
+  → THIS script as system prompt/guardrails → digest → Telegram desk.
+  The browser voice (Web Speech API) is a PLACEHOLDER for production voices.
+-->
+<style>
+  :root{
+    --paper:#F4EFE4; --paper-2:#EAE2D0; --ink:#1C2420; --ink-soft:#3D463F;
+    --hivis:#FF5A1F; --hivis-deep:#D8430F; --pine:#1E4D3B; --pine-bright:#2A6B51;
+    --sky:#BFD8D2; --warn:#C0392B;
+    --line:3px solid var(--ink); --sh:7px 7px 0 var(--ink); --sh-sm:4px 4px 0 var(--ink);
+    --font-d:"Arial Black","Archivo Black",Arial,Helvetica,sans-serif;
+    --font-b:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,Consolas,monospace; --rad:2px; --max:1240px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font-b);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--hivis);color:#fff}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+  h1,h2,h3,.display{font-family:var(--font-d);letter-spacing:-.3px}
+  .eyebrow{font-family:var(--font-d);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--pine)}
+  .badge{display:inline-block;font-family:var(--font-d);font-size:11px;letter-spacing:1.5px;
+    padding:4px 10px;border:2px solid var(--ink);border-radius:2px;background:#fff;text-transform:uppercase}
+
+  header.top{background:var(--ink);color:var(--paper);border-bottom:3px solid var(--hivis);padding:16px 0}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .brand{font-family:var(--font-d);font-size:15px}
+  .brand em{font-style:normal;color:var(--hivis)}
+  .top-note{font-size:13.5px;color:#B9C2BC}
+
+  .layout{display:grid;grid-template-columns:230px 1fr 370px;gap:22px;padding:26px 0 30px;align-items:start}
+  @media (max-width:1080px){.layout{grid-template-columns:1fr}}
+  .col-head{font-family:var(--font-d);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+
+  /* personas */
+  .persona{
+    display:block;width:100%;text-align:left;background:#fff;border:var(--line);
+    border-radius:var(--rad);box-shadow:var(--sh-sm);padding:14px 14px;margin-bottom:12px;
+    cursor:pointer;font:inherit;transition:transform .08s ease,background .08s ease;
+  }
+  .persona:hover{transform:translate(-1px,-1px);background:var(--paper-2)}
+  .persona.sel{background:var(--pine);color:#fff}
+  .persona.sel .p-desc{color:var(--sky)}
+  .persona.sel .p-tests{color:#F4EFE4}
+  .p-name{font-family:var(--font-d);font-size:15px}
+  .p-desc{font-size:13px;color:var(--ink-soft);margin:4px 0}
+  .p-tests{font-size:12px;font-weight:700;color:var(--pine)}
+  .p-tests em{color:var(--hivis);font-style:normal}
+
+  /* call panel */
+  .callcard{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+  .callcard header{
+    background:var(--pine);color:#fff;padding:14px 20px;display:flex;align-items:center;
+    justify-content:space-between;gap:12px;
+  }
+  .callcard header .who{font-family:var(--font-d);font-size:16px}
+  .callcard header .state{font-size:12.5px;color:var(--sky);text-transform:uppercase;letter-spacing:1.5px}
+  .transcript{padding:18px 20px;min-height:330px;max-height:430px;overflow-y:auto;background:
+    repeating-linear-gradient(0deg, #fff, #fff 34px, #FAF7EE 34px, #FAF7EE 68px)}
+  .line{margin-bottom:14px;display:flex;gap:10px;align-items:flex-end}
+  .line .who{flex:none;width:74px;font-size:11px;font-family:var(--font-d);text-transform:uppercase;letter-spacing:1px;padding-bottom:5px}
+  .line .bub{padding:11px 15px;border:2px solid var(--ink);border-radius:12px;max-width:78%;font-size:16px}
+  .line.bot .who{color:var(--pine)}
+  .line.bot .bub{background:#fff;border-color:var(--pine);border-bottom-left-radius:2px}
+  .line.human{flex-direction:row-reverse}
+  .line.human .who{color:var(--ink-soft);text-align:right}
+  .line.human .bub{background:var(--paper-2);border-bottom-right-radius:2px}
+  .line.sys .bub{background:transparent;border:2px dashed var(--hivis);color:var(--hivis-deep);
+    font-size:13.5px;font-weight:700;border-radius:8px;margin:0 auto;max-width:92%}
+  .typing i{display:inline-block;width:6px;height:6px;background:var(--pine);border-radius:50%;margin:0 2px;animation:bnc .9s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes bnc{0%,60%,100%{transform:none}30%{transform:translateY(-5px)}}
+  .controls{display:flex;gap:12px;padding:16px 20px;border-top:var(--line);background:var(--paper);flex-wrap:wrap}
+  .btn{
+    font-family:var(--font-d);font-size:14px;padding:12px 20px;cursor:pointer;
+    border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);
+    background:#fff;color:var(--ink);transition:transform .08s ease;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .btn:hover{transform:translate(-2px,-2px)}
+  .btn-hivis{background:var(--hivis);color:#fff}
+  .btn-pine{background:var(--pine);color:#fff}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .freebox{display:flex;gap:10px;padding:14px 20px;border-top:2px dashed var(--paper-2)}
+  .freebox input{flex:1;font:inherit;font-size:16px;padding:12px 14px;border:var(--line);border-radius:var(--rad);background:#fff}
+  .freebox input:focus{outline:4px solid var(--hivis)}
+  .voice-toggle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink-soft);padding:0 4px}
+  .voice-toggle input{width:20px;height:20px;accent-color:var(--pine)}
+
+  /* ticket panel */
+  .ticketcard{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;position:sticky;top:20px}
+  .ticketcard header{background:var(--ink);color:var(--paper);padding:14px 20px;font-family:var(--font-d);font-size:15px;display:flex;justify-content:space-between;align-items:center}
+  .lane-chip{font-size:12px;letter-spacing:1.5px;padding:6px 12px;border-radius:2px;background:var(--paper-2);color:var(--ink);text-transform:uppercase}
+  .lane-chip.handyman{background:var(--pine-bright);color:#fff}
+  .lane-chip.licensed{background:var(--ink);color:#fff;border:2px solid var(--hivis)}
+  .lane-chip.emergency{background:var(--warn);color:#fff;animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.75}}
+  .t-fields{padding:14px 20px}
+  .t-row{display:grid;grid-template-columns:118px 1fr;gap:10px;padding:8px 0;border-bottom:2px dashed var(--paper-2);font-size:15px}
+  .t-row dt{font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);padding-top:2px}
+  .t-row dd{min-height:22px}
+  .t-row dd:empty::after{content:"—";color:#B9C2BC}
+  .log{background:var(--ink);color:#9FE8C9;font-family:var(--mono);font-size:12px;padding:14px 16px;max-height:150px;overflow-y:auto;line-height:1.7}
+  .log .g{color:var(--hivis)}
+  .digest{display:none;border-top:var(--line);padding:16px 20px;background:#F7FBF5}
+  .digest.show{display:block}
+  .digest h4{font-family:var(--font-d);font-size:14px;text-transform:uppercase;color:var(--pine);margin-bottom:10px}
+  .digest pre{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;background:var(--ink);color:var(--sky);padding:14px;border-radius:3px;line-height:1.65}
+
+  .foot{padding:0 0 60px}
+  .pipes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:1080px){.pipes{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){.pipes{grid-template-columns:1fr}}
+  .pipe{background:#fff;border:var(--line);border-radius:var(--rad);box-shadow:var(--sh-sm);padding:16px}
+  .pipe .n{font-family:var(--font-d);color:var(--hivis);font-size:22px}
+  .pipe h3{font-size:14px;margin:6px 0}
+  .pipe p{font-size:13.5px;color:var(--ink-soft)}
+  .caveat{margin-top:18px;font-size:14px;color:var(--ink-soft);max-width:76ch}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">DESK ENGINE v0 · <em>WE RETURN CALLS</em></div>
+    <div class="top-note">The receptionist's <b>brain</b> — script, guardrails, lane triage. No telephony yet. Browser voice = stand-in for production voices.</div>
+  </div>
+</header>
+
+<main class="wrap layout">
+
+  <!-- PERSONAS -->
+  <div>
+    <div class="col-head">Test callers</div>
+    <div id="personas"></div>
+    <div class="caveat" style="margin-top:14px">Each persona exists to break ONE thing. Auto-run them; then use free-say mode and try to break it yourself.</div>
+  </div>
+
+  <!-- CALL -->
+  <div>
+    <div class="col-head">The call</div>
+    <div class="callcard">
+      <header>
+        <span class="who" id="callerName">No caller</span>
+        <span class="state" id="callState">STANDBY</span>
+      </header>
+      <div class="transcript" id="transcript">
+        <div class="line sys"><div class="bub">Pick a test caller on the left, or type below to play the caller yourself.</div></div>
+      </div>
+      <div class="freebox">
+        <input id="freein" placeholder="Say something as the caller… (free mode)" autocomplete="off">
+        <button class="btn btn-pine" id="sayBtn">Say it</button>
+      </div>
+      <div class="controls">
+        <button class="btn btn-hivis" id="runBtn" disabled>▶ Auto-run persona</button>
+        <button class="btn" id="hangBtn" disabled>End call → digest</button>
+        <button class="btn" id="resetBtn">New call</button>
+        <label class="voice-toggle"><input type="checkbox" id="voiceOn" checked> bot voice</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKET -->
+  <div>
+    <div class="col-head">Live ticket + guardrails</div>
+    <div class="ticketcard">
+      <header>Desk ticket <span class="lane-chip" id="laneChip">Untriaged</span></header>
+      <dl class="t-fields">
+        <div class="t-row"><dt>Caller</dt><dd id="tName"></dd></div>
+        <div class="t-row"><dt>Callback #</dt><dd id="tPhone"></dd></div>
+        <div class="t-row"><dt>Area</dt><dd id="tHood"></dd></div>
+        <div class="t-row"><dt>Job</dt><dd id="tJob"></dd></div>
+        <div class="t-row"><dt>Urgency</dt><dd id="tUrg"></dd></div>
+        <div class="t-row"><dt>Photos</dt><dd id="tPhotos"></dd></div>
+      </dl>
+      <div class="log" id="log"><div>// guardrail + triage log</div></div>
+      <div class="digest" id="digest"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- PRODUCTION PIPELINE -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="col-head" style="margin-bottom:14px">How this becomes a real phone line</div>
+    <div class="pipes">
+      <div class="pipe"><div class="n">1</div><h3>Twilio number ~$3/mo</h3><p>The desk number lives here. Inbound forwards to a voice stack, outbound shows the brand number. Auto-text on missed call = the brand promise.</p></div>
+      <div class="pipe"><div class="n">2</div><h3>Voice stack ~$0.10–0.20/min</h3><p>Retell / Vapi / Synthflow: speech-to-text → LLM → text-to-speech, sub-second. Runs THIS script as its system prompt and guardrails.</p></div>
+      <div class="pipe"><div class="n">3</div><h3>This engine (the IP)</h3><p>Intake order, lane rules, never-quote/never-diagnose guardrails, emergency branch, photo prompts. Pipes are rented; this is owned.</p></div>
+      <div class="pipe"><div class="n">4</div><h3>Digest → desk</h3><p>The ticket drops into the same Telegram digest machine as the handyman intake. Human calls back same day with the band.</p></div>
+    </div>
+    <p class="caveat"><b>What this prototype proves:</b> the conversation script survives hard callers. <b>What it can't prove:</b> voice quality, latency, and interruption handling — that's the pipes, tested by calling OnCrew (213) 319-5075 and Hatch (810) 425-1485, free.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ═════════════ ENGINE ═════════════ */
+
+const LICENSED_KW = ["gas","furnace","fireplace","water heater","hot water tank","outlet","breaker","panel","wiring","wire ","electrical","light fixture","junction","knob and tube","hot tub","sauna","suite","secondary suite","basement suite","strata","duplex","structural","wall removed","load bearing","reno","renovation","permit","appliance","dishwasher","washing machine","microwave","fridge","freezer","oven","stove","garburator"];
+const HANDYMAN_KW = ["faucet","tap","drip","dripping","gate","fence","hinge","door","lock","knob","window","stuck","drywall","patch","paint","caulk","deck","railing","gutter","shelf","shelves","hang","assemble","assembly","toilet","flapper","pressure wash","power wash","bin clean","garbage bin","garbage can","trash bin","squeak","trim","baseboard","curtain rod"];
+const EMERGENCY_KW = ["smell gas","gas smell","sparking","sparks","smoke","smoke alarm","fire","flooding","flood","burst pipe","water everywhere","carbon monoxide","no heat and baby"];
+const PRICE_KW = ["how much","price","cost","exact","quote","charge","what's it","estimate"];
+const HUMAN_KW = ["human","real person","person","robot","bot","are you real","machine","speak to someone","manager"];
+const PHOTO_OK = ["yes","yeah","can do","sure","ok","okay","will do","i have","on my phone","ipad","tablet","send","text","photo","picture"];
+const YES = ["yes","yeah","yep","sure","ok","okay","correct","that's right","right"];
+const HOODS = ["langdale","gibsons","roberts creek","davis bay","wilson creek","sechelt","sandy hook","tuwanek","halfmoon bay","pender harbour","madeira park"];
+
+const S = {}; // session state
+function reset(){
+  Object.assign(S,{name:null,phone:null,hood:null,job:null,urg:null,photos:null,
+    lane:null,priceDeflects:0,humanAsks:0,patience:0,emergency:false,stage:"GREET",
+    outExplain:0,trade:null,logLines:[]});
+  render();
+}
+function log(msg,flag){
+  const t = document.getElementById('log');
+  const el = document.createElement('div');
+  el.innerHTML = (flag?'<span class="g">▸ '+flag+'</span> ':'')+esc(msg);
+  t.appendChild(el); t.scrollTop = t.scrollHeight; S.logLines.push(msg);
+}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function setLane(l,why){
+  if(S.emergency) return;
+  const order={HANDYMAN:1,LICENSED:2};
+  if(!S.lane || order[l] > order[S.lane] || S.lane==="NEEDS DESK EYES"){
+    S.lane=l; if(why) log('lane → '+l+' ('+why+')','TRIAGE');
+  }
+  render();
+}
+
+function render(){
+  const set=(id,v)=>{document.getElementById(id).textContent=v||'';};
+  set('tName',S.name); set('tPhone',S.phone); set('tHood',S.hood);
+  set('tJob',S.job); set('tUrg',S.urg); set('tPhotos',S.photos);
+  const chip=document.getElementById('laneChip');
+  chip.textContent = S.emergency?'⚠ EMERGENCY':(S.lane||'Untriaged');
+  chip.className='lane-chip '+(S.emergency?'emergency':(S.lane==='HANDYMAN'?'handyman':(S.lane==='LICENSED'?'licensed':'')));
+}
+
+/* ── bot lines (the script — this is the product) ── */
+const BOT={
+  greet:"Thanks for calling We Return Calls — you've reached our automated intake. A real person from the desk calls you back today. First: can I get your name?",
+  askPhone:"Got it, {name}. What's the best number for the callback?",
+  askHood:"And which part of the Coast are you in — Gibsons, Sechelt, up towards Pender Harbour?",
+  askJob:"Okay. In plain words — what's the job? What's wrong, and how long's it been doing that?",
+  askUrg:"How urgent is it — whenever's fair, this week, getting worse, or a safety worry?",
+  askPhotos:"Last thing: can you text me a photo or two of it after we hang up? Photos are how we price jobs without anyone driving out first.",
+  priceDeflect:"Fair question — I don't quote prices, and I'd be suspicious of any number given sight-unseen. The desk calls you back with a realistic price band: what it likely costs, and the worst case, in writing. Free either way.",
+  priceDeflect2:"I hear you — you want a number. Here's the honest one: bands beat fake precision. A tradesperson quoting exact on the phone is guessing, and you pay for the guess. Callback today with the band — that's the promise I can keep.",
+  humanLine:"You're talking to the automated intake — the human is me handing you to the desk. Tell me the job in a sentence or two and a person calls you back today with answers, not voicemail.",
+  humanLine2:"I understand. I'll flag this for a priority human callback — the desk calls you today, from a person, first in the queue. Let me still grab the basics so that call is fast.",
+  patience:"No rush — take your time. In one short sentence: what's the thing that needs fixing?",
+  patience2:"That's okay. Let's start smaller: which room, or is it outside?",
+  offTopicSteer:"Ha — noted. And so the desk has what it needs: what's the job itself?",
+  emergency:"Okay — important: if you smell gas, leave the house now, don't touch switches, and call 911 or FortisBC's emergency line, 1-800-663-9911, from outside. This desk is not for emergencies. Once you're safe, a person from the desk calls you back about follow-up work. Are you somewhere safe right now?",
+  emergencyClose:"Good. Stay outside until FortisBC or 911 tells you it's clear. The desk will call you today about any follow-up repairs once it's safe. Please — safety first.",
+  licensedNote:"Heads-up before we book: that kind of work has to go to a licensed contractor by law in BC — which protects you. We still book it, we still batch it, and the callback still happens today.",
+  confirm:"Reading it back: {name}, {hood}. Job: {job}. Urgency: {urg}. Photos to follow: {photos}. A person from the desk calls you back today with the lane and the price band. Sound right?",
+  close:"Perfect. It's in the queue — expect us today. Thanks for calling We Return Calls."
+};
+function fmt(t){return t.replace('{name}',S.name||'there').replace('{hood}',S.hood||'').replace('{job}',S.job||'').replace('{urg}',S.urg||'').replace('{photos}',S.photos||'unknown');}
+
+/* ── outbound cold-referral lines (number arrived from a trade, no context) ── */
+const OB={
+  open:"Hi — this is We Return Calls, the Sunshine Coast trades desk. {trade} passed us your number and asked us to return your call about a job — we handle the small ones, and this takes two minutes. Is now okay?",
+  explain:"Totally fair question: {trade} had your number from your call and passed it to us rather than leaving you on voicemail. That's the whole chain, nobody else has it. We're the desk that returns small-job calls on the Coast. Want to tell me the job, or should I leave you be?",
+  leaveAlone:"No problem at all — your number came only from {trade} and it's deleted on your word. If the job's still nagging later, the desk is easy to find: we return calls. Have a good day.",
+  thanksAskHood:"Appreciate that. And which part of the Coast are you on — Gibsons, Sechelt, up toward Pender Harbour?",
+  askJob:"In plain words, then — what's the job?"
+};
+
+/* ── the brain: caller line → bot response ── */
+function respond(line){
+  const l=(line||'').toLowerCase();
+  const words=l.replace(/[^\w\s]/g,'').split(/\s+/).filter(Boolean);
+
+  // emergency overrides everything, any stage
+  if(!S.emergency && EMERGENCY_KW.some(k=>l.includes(k))){
+    S.emergency=true; S.lane='EMERGENCY';
+    log('emergency keyword fired','GUARDRAIL');
+    render();
+    if(!S.name) S.name='(unknown — emergency)';
+    render();
+    return BOT.emergency;
+  }
+  if(S.emergency){
+    if(YES.some(k=>l.includes(k))||l.includes("outside")) return BOT.emergencyClose;
+    return BOT.emergency;
+  }
+
+  // OUTBOUND COLD-REFERRAL: number came from a trade, zero context
+  if(S.stage==="OUTREF"){
+    const SK=["who is this","how did you get","where did you get","how'd you get","scam","spam","remove my","take me off","don't call","dont call","stop calling","not interested"];
+    if(SK.some(k=>l.includes(k))){
+      S.outExplain++;
+      log('skeptic beat #'+S.outExplain+(S.outExplain>=2?' — consent exit offered':''),'GUARDRAIL');
+      if(S.outExplain>=2) return OB.leaveAlone.replace('{trade}',S.trade||'the trade you called');
+      return OB.explain.replace('{trade}',S.trade||'the trade you called');
+    }
+    const nm=line.match(/(?:i['’]?m|this is|name'?s|it'?s)\s+([A-Za-z][a-z]+)/i);
+    if(nm&&!['Well','Oh','Okay','Fine','Sure','Hello','Yes'].includes(nm[1])) S.name=nm[1].charAt(0).toUpperCase()+nm[1].slice(1);
+    if(LICENSED_KW.some(k=>l.includes(k))||HANDYMAN_KW.some(k=>l.includes(k))){
+      // they skipped straight to the job
+      S.job=line.trim(); render();
+      S.stage="HOOD";
+      return OB.thanksAskHood;
+    }
+    S.stage="JOB"; render();
+    return OB.askJob;
+  }
+
+  // opportunistic scan FIRST — lane + hood signals survive even guardrail detours
+  const hoodHit=HOODS.find(h=>l.includes(h));
+  if(hoodHit && !S.hood){S.hood=hoodHit.charAt(0).toUpperCase()+hoodHit.slice(1);log('area captured from speech: '+S.hood);}
+  if(LICENSED_KW.some(k=>l.includes(k))) setLane('LICENSED','licensed keyword: '+LICENSED_KW.find(k=>l.includes(k)));
+  else if(HANDYMAN_KW.some(k=>l.includes(k))) setLane('HANDYMAN','handyman keyword: '+HANDYMAN_KW.find(k=>l.includes(k)));
+
+  // price asks: deflect policy, twice, then log stubborn + continue
+  if(PRICE_KW.some(k=>l.includes(k))){
+    S.priceDeflects++;
+    log('price deflect #'+S.priceDeflects+', exact-number refused','GUARDRAIL');
+    const dfl = S.priceDeflects>=2 ? BOT.priceDeflect2 : BOT.priceDeflect;
+    // caller bundled the job INTO the price ask — capture it, advance, don't lose it
+    if(S.stage==="JOB" && !S.job && (LICENSED_KW.some(k=>l.includes(k))||HANDYMAN_KW.some(k=>l.includes(k)))){
+      S.job=line.trim(); if(!S.lane){setLane('NEEDS DESK EYES','no keyword match');}
+      S.stage="URG"; render();
+      return dfl+" And on that job — sounds like "+(S.lane==='LICENSED'?'licensed work':'handyman work')+". "+BOT.askUrg;
+    }
+    return dfl;
+  }
+  // human demand
+  if(HUMAN_KW.some(k=>l.includes(k))&&S.stage!=="DONE"
+     && !LICENSED_KW.some(k=>l.includes(k)) && !HANDYMAN_KW.some(k=>l.includes(k))){
+    S.humanAsks++;
+    log('human-demand #'+S.humanAsks,(S.humanAsks>=2?'ESCALATE':'GUARDRAIL'));
+    if(S.humanAsks>=2){S.urg=S.urg||'PRIORITY human callback';render();return BOT.humanLine2;}
+    return BOT.humanLine;
+  }
+
+  // mumbling/unclear — ONLY police the narrative stage (JOB); short answers are
+  // valid everywhere else (a one-word "Sechelt." is an answer, not a mumble)
+  if(S.stage==="JOB" && !S.job &&
+     !LICENSED_KW.some(k=>l.includes(k)) && !HANDYMAN_KW.some(k=>l.includes(k))){
+    S.patience++;
+    log('job unclear, clarify loop #'+S.patience,'GUARDRAIL');
+    if(S.patience>=2){ // best-effort capture, then move on
+      S.job=line.trim(); setLane('NEEDS DESK EYES','unclear after 2 tries — desk confirms');
+      S.stage="URG"; render();
+      return "Okay — I have the gist, and the desk confirms details on the callback anyway. "+BOT.askUrg;
+    }
+    return S.patience?BOT.patience2:BOT.patience;
+  }
+
+  switch(S.stage){
+    case "GREET":{
+      let m=line.match(/(?:i['’]?m|this is|name'?s|it'?s)\s+([A-Za-z][a-z]+)/i)||line.match(/^([A-Z][a-z]+)/);
+      let nm=m?m[1]:(words.length<=3?line.trim():'(caller)');
+      nm=nm.replace(/^[^A-Za-z]+/,'').replace(/[^A-Za-z']+$/,'');
+      if(['This','It','Calling','Hi','Hello','Yeah'].includes(nm)) nm='(caller)';
+      S.name=nm.charAt(0).toUpperCase()+nm.slice(1);
+      // caller fused name+number in one breath — don't make them repeat it
+      const d0=l.replace(/[^\d]/g,'');
+      if(d0.length>=7){
+        S.phone=d0.slice(0,10).replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3');
+        S.stage="HOOD"; render();
+        return BOT.askHood;
+      }
+      S.stage="PHONE"; render();
+      return BOT.askPhone;
+    }
+    case "PHONE":{
+      const d=l.replace(/[^\d]/g,'');
+      if(d.length>=7){
+        S.phone=d.slice(0,10).replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3');
+      } else {
+        S.phone=line.trim();
+        log('spoken-word number, not digits — production STT normalizes this; v0 records raw','NOTE');
+      }
+      S.stage="HOOD"; render();
+      return BOT.askHood;
+    }
+    case "HOOD":{
+      if(!S.hood) S.hood=hoodHit?hoodHit.charAt(0).toUpperCase()+hoodHit.slice(1):line.trim();
+      render();
+      if(S.job){ S.stage="URG"; return BOT.askUrg; }
+      S.stage="JOB";
+      return BOT.askJob;
+    }
+    case "JOB":{
+      S.job=line.trim();
+      if(!S.lane){setLane('NEEDS DESK EYES','no keyword match — bands only');}
+      render();
+      const laneNote = S.lane==='LICENSED' ? BOT.licensedNote+' ' : '';
+      if(S.lane==='LICENSED') log('licensed-lane note spoken to caller');
+      if(!S.hood){ S.stage='HOOD'; return laneNote+OB.thanksAskHood; }
+      S.stage="URG"; render();
+      return laneNote+BOT.askUrg;
+    }
+    case "URG":{
+      if(l.includes('safety')||l.includes('worse')) S.urg=l.includes('safety')?'Safety — today':'Getting worse';
+      else if(l.includes('week')) S.urg='This week';
+      else if(l.includes('today')||l.includes('soon')) S.urg='Today if possible';
+      else S.urg='Whenever’s fair';
+      S.stage="PHOTOS"; render();
+      return BOT.askPhotos;
+    }
+    case "PHOTOS":{
+      S.photos=PHOTO_OK.some(k=>l.includes(k))?'Caller will text photos':'No photos (older phone / declined)';
+      log('photos: '+S.photos);
+      S.stage="CONFIRM"; render();
+      return fmt(BOT.confirm);
+    }
+    case "CONFIRM":{
+      if(l.includes('no')||l.includes('wrong')){S.stage="JOB";return "My mistake — tell me the job once more, plainly.";}
+      S.stage="DONE"; render();
+      return BOT.close;
+    }
+    default: return BOT.patience;
+  }
+}
+
+/* ═════════════ UI ═════════════ */
+const T=document.getElementById('transcript');
+let voiceOn=true;
+document.getElementById('voiceOn').addEventListener('change',e=>voiceOn=e.target.checked);
+
+function speak(text){
+  if(!voiceOn||!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/[▸⚠✓→]/g,''));
+  u.rate=1.0; u.pitch=1.0;
+  const v=speechSynthesis.getVoices().find(v=>/en[-_]CA/i.test(v.lang)&&v.localService)
+        ||speechSynthesis.getVoices().find(v=>/en[-_]CA/i.test(v.lang))
+        ||speechSynthesis.getVoices().find(v=>/Samantha/i.test(v.name));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+speechSynthesis && speechSynthesis.getVoices();
+
+function addLine(who,text){
+  const row=document.createElement('div'); row.className='line '+who;
+  const w=document.createElement('div'); w.className='who';
+  w.textContent= who==='bot'?'DESK-AI':(who==='sys'?'': 'CALLER');
+  const b=document.createElement('div'); b.className='bub';
+  if(who==='bot'||who==='sys') b.innerHTML=esc(text); else b.textContent=text;
+  row.appendChild(w); row.appendChild(b);
+  T.appendChild(row); T.scrollTop=T.scrollHeight;
+  return b;
+}
+
+function botSay(text){
+  const b=addLine('bot','');
+  b.innerHTML='<span class="typing"><i></i><i></i><i></i></span>';
+  setTimeout(()=>{b.textContent=text;speak(text);T.scrollTop=T.scrollHeight;},550+Math.random()*350);
+}
+
+/* free mode */
+document.getElementById('sayBtn').addEventListener('click',freeSay);
+document.getElementById('freein').addEventListener('keydown',e=>{if(e.key==='Enter')freeSay();});
+function freeSay(){
+  const inp=document.getElementById('freein');
+  const v=inp.value.trim(); if(!v)return; inp.value='';
+  document.getElementById('callState').textContent='LIVE — FREE MODE';
+  if(!S.name && S.stage==='GREET') document.getElementById('callerName').textContent='You (as caller)';
+  addLine('human',v);
+  botSay(respond(v));
+}
+
+/* personas */
+const PERSONAS=[
+ {id:'marg',name:'Marg, 78 — Gibsons',desc:'The rambler. Faucet story with three detours.',
+  tests:'Tests: <em>patience loops</em>, steering, slow speech',lines:[
+   "This is Marg calling from Gibsons.",
+   "604 886 22 14.",
+   "Gibsons — lower Gibsons, near the marina. Well… it's about my kitchen. My late husband always handled these things.",
+   "The tap has been dripping for months now. Drip, drip, all night. I put a pot under it. The dog used to drink out of that pot.",
+   "Oh, whenever's fair dear, I'm not going anywhere.",
+   "I have an iPad — my grandson can send you a picture, yes.",
+   "That sounds just fine, thank you dear."
+ ]},
+ {id:'dave',name:'Dave — the price shopper',desc:'Wants an exact number, right now, twice.',
+  tests:'Tests: <em>never-quote guardrail</em> ×2',lines:[
+   "Dave here.",
+   "Yeah it's 604-989-4431.",
+   "Roberts Creek.",
+   "Kitchen faucet needs swapping, I bought the new one already. So how much? Just give me a number.",
+   "I don't want a band, what's the exact cost? You're the expert.",
+   "Fine. Band on the callback. Today, though?",
+   "Yeah I'll text a photo of under the sink.",
+   "Correct."
+ ]},
+ {id:'priya',name:'Priya — basement suite',desc:'Outlets dead in a rented suite.',
+  tests:'Tests: <em>licensed lane</em> + suite modifier + still-books promise',lines:[
+   "Hi, this is Priya.",
+   "778 462 9983.",
+   "Sechelt — and just so you know, the problem's in our basement suite, we rent it out.",
+   "Two outlets in the suite just stopped working this morning. Breaker looks fine, we flipped it.",
+   "This week ideally, my tenant works from home.",
+   "Yes, I can text photos of the outlets and the panel.",
+   "Yes that's right."
+ ]},
+ {id:'randy',name:'Randy — gas smell',desc:'Panicked. Smells gas near the furnace.',
+  tests:'Tests: <em>emergency branch</em> overrides everything',lines:[
+   "Randy. Listen — I can smell gas down by the furnace.",
+   "Okay… okay. I'm heading outside now. I'm outside.",
+   "Yep, called Fortis from the driveway. They said don't go back in. Can someone fix the furnace after?"
+ ]},
+ {id:'bob',name:'Bob — the mumbler',desc:'Hearing aid, broken sentences, two-word answers.',
+  tests:'Tests: <em>clarify loop</em>, no panic on noise',lines:[
+   "…Bob.",
+   "Six oh four… eight eight five… seventy thirteen.",
+   "Halfmoon Bay.",
+   "The, uh… the winda.",
+   "The bedroom winda — window — won't stay up. Falls right down.",
+   "Eh? Whenever.",
+   "Photos… the missus has the phone, she'll send it.",
+   "Yep."
+ ]},
+ {id:'alan',name:'Alan — wants a HUMAN',desc:'Zero patience for robots. Pushes twice.',
+  tests:'Tests: <em>human-escalation</em> rungs 1→2',lines:[
+   "Get me a human. A real person. Now.",
+   "I don't care, I want to speak to someone, not a machine.",
+   "Alan. 604-741-8833.",
+   "Sechelt.",
+   "Gutter's hanging off the front of the house after the windstorm.",
+   "Getting worse, it's halfway off.",
+   "I'll text photos.",
+   "Fine. Today, though."
+ ]},
+ {id:'vera',name:'Vera — cold number',desc:'Referred by Rick the plumber. Never heard of us. Skeptical.',
+  tests:'Tests: <em>cold-referral trust</em>, skeptic beats',out:true,prePhone:'(604) 555-0199',trade:'Rick the plumber',lines:[
+   "Hello? Who is this? How did you get my number?",
+   "Oh. Rick gave you my number? He never called me back himself.",
+   "Well alright. It's the kitchen faucet — leaks at the base when I run it.",
+   "Davis Bay.",
+   "This week if I can.",
+   "I can text photos, sure.",
+   "Sounds right."
+ ]}
+];
+
+let cur=null;
+const pWrap=document.getElementById('personas');
+PERSONAS.forEach(p=>{
+  const b=document.createElement('button');
+  b.className='persona'; b.id='p-'+p.id;
+  b.innerHTML='<div class="p-name">'+p.name+'</div><div class="p-desc">'+p.desc+'</div><div class="p-tests">'+p.tests+'</div>';
+  b.addEventListener('click',()=>selectPersona(p));
+  pWrap.appendChild(b);
+});
+
+function selectPersona(p){
+  cur=p;
+  document.querySelectorAll('.persona').forEach(x=>x.classList.remove('sel'));
+  document.getElementById('p-'+p.id).classList.add('sel');
+  hardResetUI();
+  if(p.out){
+    S.phone=p.prePhone; S.trade=p.trade; S.stage='OUTREF';
+    log('source: cold number referred by '+p.trade+' — zero context','SOURCE');
+    render();
+  }
+  T.innerHTML='<div class="line sys"><div class="bub">'+(p.out?'Outbound cold callback to a referred number. ':'Caller ready: ')+esc(p.name)+' — press ▶ Auto-run persona.</div></div>';
+  document.getElementById('runBtn').disabled=false;
+  document.getElementById('callerName').textContent=p.name;
+  document.getElementById('callState').textContent=p.out?'OUTBOUND':'READY';
+}
+
+let autoTimer=null;
+document.getElementById('runBtn').addEventListener('click',()=>{
+  if(!cur) return;
+  document.getElementById('runBtn').disabled=true;
+  document.getElementById('hangBtn').disabled=false;
+  document.getElementById('callState').textContent='LIVE';
+  T.innerHTML='';
+  botSay(cur.out?OB.open.replace('{trade}',cur.trade):BOT.greet);
+  let i=0;
+  function nextLine(){
+    if(i>=cur.lines.length){ endCall(); return; }
+    const line=cur.lines[i++];
+    setTimeout(()=>{
+      addLine('human',line);
+      const r=respond(line);
+      setTimeout(()=>{botSay(r); if(S.stage==='DONE'||i>=cur.lines.length){setTimeout(endCall,2200);} else nextLine();},900);
+    },2200+Math.random()*900);
+  }
+  setTimeout(nextLine,2400);
+});
+
+document.getElementById('hangBtn').addEventListener('click',endCall);
+document.getElementById('resetBtn').addEventListener('click',()=>selectReset());
+
+function selectReset(){
+  clearTimeout(autoTimer);
+  cur=null;
+  document.querySelectorAll('.persona').forEach(x=>x.classList.remove('sel'));
+  hardResetUI();
+  T.innerHTML='<div class="line sys"><div class="bub">Pick a test caller on the left, or type below to play the caller yourself.</div></div>';
+}
+function hardResetUI(){
+  speechSynthesis && speechSynthesis.cancel();
+  reset();
+  document.getElementById('log').innerHTML='<div>// guardrail + triage log</div>';
+  document.getElementById('digest').className='digest';
+  document.getElementById('digest').innerHTML='';
+  document.getElementById('callerName').textContent=cur?cur.name:'No caller';
+  document.getElementById('callState').textContent=cur?'READY':'STANDBY';
+  document.getElementById('runBtn').disabled=!cur;
+  document.getElementById('hangBtn').disabled=true;
+}
+
+/* digest */
+function endCall(){
+  clearTimeout(autoTimer);
+  speechSynthesis && speechSynthesis.cancel();
+  document.getElementById('callState').textContent='CLOSED';
+  document.getElementById('runBtn').disabled=true;
+  const el=document.getElementById('digest');
+  const lane = S.emergency?'⚠ EMERGENCY — FortisBC/911 instruct given':(S.lane||'NEEDS DESK EYES');
+  const runDay = S.hood ? nextRunDay(S.hood) : 'TBD';
+  el.innerHTML='<h4>✓ Desk digest — this is what hits Telegram</h4><pre>'
+   +'CALL INTAKE — '+new Date().toLocaleTimeString()+'\n'
+   +'───────────────────────────────\n'
+   +'LANE     : '+lane+'\n'
+   +'CALLER   : '+(S.name||'—')+'  ·  '+(S.phone||'—')+'\n'
+   +'AREA     : '+(S.hood||'—')+'\n'
+   +'JOB      : '+(S.job||'(not captured)')+'\n'
+   +'URGENCY  : '+(S.urg||'—')+'\n'
+   +'PHOTOS   : '+(S.photos||'—')+'\n'
+   +'CALLBACK : same business day, human desk\n'
+   +'BAND     : desk computes from rate card AFTER photos\n'
+   +'CONFIDENCE: '+(S.lane==='LICENSED'?'needs-eyes → push assessment visit':(S.lane==='NEEDS DESK EYES'||!S.lane?'needs-eyes — unclear intake, desk confirms':'solid (rate-card arithmetic)'))+'\n'
+   +'TBD FLAGS: '+(S.photos&&S.photos.startsWith('Caller will')?'pending photos — unknowns list after review':'no photos — condition unknowns open')+'\n'
+   +'BATCH    : add to '+runDay+' run\n'
+   +'GUARDS   : price-deflects '+S.priceDeflects+' · human-asks '+S.humanAsks
+   +' · patience '+S.patience+(S.emergency?' · EMERGENCY SCRIPT FIRED':'')+'</pre>';
+  el.className='digest show';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function nextRunDay(hood){
+  const h=hood.toLowerCase();
+  if(/sechelt|sandy|tuwanek/.test(h)) return 'TUE Sechelt';
+  if(/gibsons|langdale|roberts/.test(h)) return 'THU Gibsons';
+  if(/halfmoon|pender|madeira/.test(h)) return 'FRI Upper Coast';
+  return 'WED flex';
+}
+
+reset();
+</script>
+</body>
+</html>
